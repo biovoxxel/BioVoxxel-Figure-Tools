@@ -1,0 +1,160 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>de.biovoxxel</groupId>
+  <artifactId>figure.tools</artifactId>
+  <version>1.1.0b</version>
+  <name>BioVoxxel Figure Tools</name>
+  <description>The SVG Exporter is meant to export images and all related overlays in images, embedd images and objects in SVG files to enable loss-less scalability of scientific data. The Create Framed Inset Zoom function allows to create scaled copies of an image area with a certain integer zoom factor to prevent pixel alterations but keeping the original scaling information to allow proper scale bar addition.</description>
+  <inceptionYear>2022</inceptionYear>
+	
+	<url>tbd</url>
+	<organization>
+		<name>BioVoxxel</name>
+	 	<url>https://www.biovoxxel.de</url>
+	 </organization>
+	 
+	<parent>
+		<relativePath />
+		<artifactId>pom-scijava</artifactId>
+		<version>31.1.0</version>
+		<groupId>org.scijava</groupId>
+	</parent>
+	
+	
+	 <developers>
+		<developer>
+			<id>biovoxxel</id>
+			<name>Jan Brocher</name>
+			<email>jan.brocher@biovoxxel.de</email>
+			<organization>BioVoxxel</organization>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
+		</developer>
+	</developers>
+	<contributors>
+		<contributor>
+			<name>none</name>
+		</contributor>
+	</contributors>
+	
+	<licenses>
+		<license>
+			<name>3-Clause BSD License</name>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	
+	<properties>
+		<package-name>de.biovoxxel.bv3dbox</package-name>
+		<license.licenseName>bsd_3</license.licenseName>
+		<license.copyrightOwners>Jan Brocher, BioVoxxel</license.copyrightOwners>
+		<!--<scijava.app.directory>/home/rhaase/programs/fiji/Fiji.app/</scijava.app.directory>-->
+	</properties>
+	
+		<mailingLists>
+		<mailingList>
+			<name>ImageSc Forum</name>
+			<archive>http://forum.image.sc/</archive>
+		</mailingList>
+	</mailingLists>
+	 
+	<scm>
+		<url>None</url>
+	</scm>
+	
+	
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/biovoxxel/svgexporter/issues</url>
+	</issueManagement>
+	
+	 
+	<repositories>
+		<repository>
+			<id>imagej.public</id>
+			<url>http://maven.imagej.net/content/groups/public</url>
+		</repository>
+		<repository>	
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+	 
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.scijava/scijava-common -->
+		<dependency>
+		    <groupId>org.scijava</groupId>
+		    <artifactId>scijava-common</artifactId>
+		    <version>2.89.0</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>ij</artifactId>
+			<scope>provided</scope>
+			<version>1.53t</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.11.0</version>
+		</dependency>
+		
+
+
+
+
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-dom -->
+		<dependency>
+		    <groupId>org.apache.xmlgraphics</groupId>
+		    <artifactId>batik-dom</artifactId>
+		    <version>1.14</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-anim -->
+		<dependency>
+		    <groupId>org.apache.xmlgraphics</groupId>
+		    <artifactId>batik-anim</artifactId>
+		    <version>1.14</version>
+		</dependency>
+		
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-svggen -->
+		<dependency>
+		    <groupId>org.apache.xmlgraphics</groupId>
+		    <artifactId>batik-svggen</artifactId>
+		    <version>1.14</version>
+		</dependency>
+
+		
+	</dependencies>
+	
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources/legacy</directory>			
+					<includes>
+						<include>plugins.config</include>
+					</includes>
+			</resource>
+		</resources>
+	  <plugins>
+	    <plugin>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-jar-plugin</artifactId>
+	     <configuration>
+	        <outputDirectory>D:/BioVoxxel/Fiji/Fiji.app - BVTB 3.0/plugins</outputDirectory>
+	      </configuration>
+	    </plugin>
+	  </plugins>
+	</build>
+	 
+  
+	
+	<ciManagement>
+		<system>None</system>
+	</ciManagement>
+</project>
