@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.biovoxxel</groupId>
-  <artifactId>figure.tools</artifactId>
-  <version>1.1.0b</version>
+  <artifactId>BioVoxxel_Figure_Tools</artifactId>
+  <version>1.2.0b</version>
   <name>BioVoxxel Figure Tools</name>
   <description>The SVG Exporter is meant to export images and all related overlays in images, embedd images and objects in SVG files to enable loss-less scalability of scientific data. The Create Framed Inset Zoom function allows to create scaled copies of an image area with a certain integer zoom factor to prevent pixel alterations but keeping the original scaling information to allow proper scale bar addition.</description>
   <inceptionYear>2022</inceptionYear>

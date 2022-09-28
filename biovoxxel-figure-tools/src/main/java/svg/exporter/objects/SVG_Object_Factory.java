@@ -43,7 +43,9 @@ public class SVG_Object_Factory {
 	private String pageUnits;
 	
 	
-	public static String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
+	public static final String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
+	public static final String inkscapeNS = "http://www.inkscape.org/namespaces/inkscape";
+	public static final String sodipodiNS= "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd";
 	private String DEFAULT_DOC_NAME = "svg";
 	private boolean interpolate = false;
 	private boolean smooth = true;
@@ -109,6 +111,7 @@ public class SVG_Object_Factory {
 		svgRoot.setAttributeNS(svgNS, SVGSyntax.SVG_VIEW_BOX_ATTRIBUTE, docViewBox);
 		svgRoot.setAttributeNS(svgNS, SVGSyntax.SVG_WIDTH_ATTRIBUTE, docWidth + pageUnits);
 		svgRoot.setAttributeNS(svgNS, SVGSyntax.SVG_HEIGHT_ATTRIBUTE, docHeight + pageUnits);
+	
 	}
 	
 	
@@ -237,7 +240,6 @@ public class SVG_Object_Factory {
 		image.setAttributeNS(svgNS, "y", "0");
 		image.setAttributeNS(svgNS, "width", "" + imp.getWidth());
 		image.setAttributeNS(svgNS, "height", "" + imp.getHeight());
-		image.setAttributeNS(svgNS, SVGSyntax.SVG_PRESERVE_ASPECT_RATIO_ATTRIBUTE, SVGSyntax.SVG_XMIDYMID_VALUE);
 		image.setAttributeNS(svgNS, SVGSyntax.SVG_IMAGE_RENDERING_ATTRIBUTE, "pixelated");
 
 		Element objectDescription = doc.createElementNS(svgNS, SVGSyntax.SVG_DESC_TAG);
@@ -250,7 +252,7 @@ public class SVG_Object_Factory {
 			image.setAttributeNS(svgNS, SVGSyntax.XLINK_HREF_QNAME, "data:image/png;base64," + embedCode);
 		} else {
 			
-//			String imageFilePath = imp.getOriginalFileInfo().getFilePath();
+			//images linked need to be located in the same folder as the actual SVG file to make the linking work
 			image.setAttributeNS(svgNS, SVGSyntax.XLINK_HREF_QNAME, imp.getTitle());
 		}
 		
@@ -310,7 +312,7 @@ public class SVG_Object_Factory {
 		
 		if (lock) {
 			
-			shapeObject.setAttributeNS(null, "sodipodi:insensitive", "true");
+			shapeObject.setAttributeNS(sodipodiNS, "sodipodi:insensitive", "true");
 		}
 		
 		System.out.println(shapeObject + " created from " + roi);
@@ -479,7 +481,7 @@ public class SVG_Object_Factory {
 		Element arrowDefs = doc.createElementNS(svgNS, SVGSyntax.SVG_DEFS_TAG);
 		
 		Element arrowMarker = doc.createElementNS(svgNS, SVGSyntax.SVG_MARKER_TAG);
-		arrowMarker.setAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE, "Arrow2");
+		arrowMarker.setAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE, "Arrow2");	//important
 		arrowMarker.setAttributeNS(svgNS, SVGSyntax.SVG_STYLE_ATTRIBUTE, "overflow:visible");
 		arrowMarker.setAttributeNS(svgNS, SVGSyntax.SVG_REF_X_ATTRIBUTE, "3");
 		arrowMarker.setAttributeNS(svgNS, SVGSyntax.SVG_REF_Y_ATTRIBUTE, "0");
@@ -487,10 +489,9 @@ public class SVG_Object_Factory {
 		arrowMarker.setAttributeNS(svgNS, SVGSyntax.SVG_MARKER_WIDTH_ATTRIBUTE, "7");
 		arrowMarker.setAttributeNS(svgNS, SVGSyntax.SVG_MARKER_HEIGHT_ATTRIBUTE, "5");
 		arrowMarker.setAttributeNS(svgNS, SVGSyntax.SVG_VIEW_BOX_ATTRIBUTE, "0 0 7.0 5.0");
-		arrowMarker.setAttributeNS(svgNS, "inkscape:isstock", "true");
-		arrowMarker.setAttributeNS(svgNS, "inkscape:collect", "always");
-		arrowMarker.setAttributeNS(svgNS, SVGSyntax.SVG_PRESERVE_ASPECT_RATIO_ATTRIBUTE, SVGSyntax.SVG_XMINYMID_VALUE);
-		
+		arrowMarker.setAttributeNS(inkscapeNS, "inkscape:isstock", "true");
+		arrowMarker.setAttributeNS(inkscapeNS, "inkscape:collect", "always");
+
 		Element arrowPath = doc.createElementNS(svgNS, SVGSyntax.SVG_PATH_ATTRIBUTE);
 		arrowPath.setAttributeNS(svgNS, SVGSyntax.SVG_TRANSFORM_ATTRIBUTE, "scale(0.5)");
 		arrowPath.setAttributeNS(svgNS, SVGSyntax.SVG_D_ATTRIBUTE, "M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z");
@@ -576,7 +577,6 @@ public class SVG_Object_Factory {
 		rectangle.setAttributeNS(svgNS, "y", "" + rectangleRoi.getBounds().y);
 		rectangle.setAttributeNS(svgNS, "width", "" + rectangleRoi.getBounds().width);
 		rectangle.setAttributeNS(svgNS, "height", "" + rectangleRoi.getBounds().height);
-		rectangle.setAttributeNS(svgNS, SVGSyntax.SVG_PRESERVE_ASPECT_RATIO_ATTRIBUTE, SVGSyntax.SVG_XMIDYMID_VALUE);
 		
 		rectangle.setAttributeNS(svgNS, "rx", "" + rectangleRoi.getCornerDiameter());
 		rectangle.setAttributeNS(svgNS, "ry", "" + rectangleRoi.getCornerDiameter());
@@ -602,9 +602,7 @@ public class SVG_Object_Factory {
 		ellipse.setAttributeNS(svgNS, "cx", "" + (bounds.x + bounds.width/2));
 		ellipse.setAttributeNS(svgNS, "cy", "" + (bounds.y + bounds.height/2));
 		ellipse.setAttributeNS(svgNS, "rx", "" + bounds.width/2);
-		ellipse.setAttributeNS(svgNS, "ry", "" + bounds.height/2);
-		ellipse.setAttributeNS(svgNS, SVGSyntax.SVG_PRESERVE_ASPECT_RATIO_ATTRIBUTE, SVGSyntax.SVG_XMIDYMID_VALUE);
-		
+		ellipse.setAttributeNS(svgNS, "ry", "" + bounds.height/2);		
 		
 		return ellipse;
 	}
@@ -641,8 +639,6 @@ public class SVG_Object_Factory {
 	public static void main(String[] args) {
 		
 		ImagePlus testImp = IJ.openImage(System.getProperty("user.home") + "/Desktop/boats.tif");
-		
-//		SVG_Object_Factory sof = new SVG_Object_Factory(testImp);
 				
 		SVG_Object_Factory.saveImageAndOverlaysAsSVG(testImp, new File(testImp.getOriginalFileInfo().getFilePath()), 3.0, true);
 	}
