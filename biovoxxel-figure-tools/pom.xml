@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.biovoxxel</groupId>
   <artifactId>BioVoxxel_Figure_Tools</artifactId>
-  <version>1.2.0b</version>
+  <version>1.2.1b</version>
   <name>BioVoxxel Figure Tools</name>
   <description>The SVG Exporter is meant to export images and all related overlays in images, embedd images and objects in SVG files to enable loss-less scalability of scientific data. The Create Framed Inset Zoom function allows to create scaled copies of an image area with a certain integer zoom factor to prevent pixel alterations but keeping the original scaling information to allow proper scale bar addition.</description>
   <inceptionYear>2022</inceptionYear>
@@ -103,10 +103,6 @@
 		    <version>2.11.0</version>
 		</dependency>
 		
-
-
-
-
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-dom -->
 		<dependency>
 		    <groupId>org.apache.xmlgraphics</groupId>

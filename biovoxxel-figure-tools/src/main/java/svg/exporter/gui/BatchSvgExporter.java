@@ -18,7 +18,7 @@ import svg.exporter.objects.SVG_Object_Factory;
  *
  */
 @Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Export all images as SVG")
-public class BatchSvgExporter implements Command{
+public class BatchSvgExporter implements Command {
 	
 		@Parameter(label = "Target folder", required = true, style = "directory")
 		File folder;

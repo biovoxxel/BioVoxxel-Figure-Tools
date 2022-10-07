@@ -6,7 +6,7 @@ import org.scijava.plugin.Plugin;
 
 import ij.ImagePlus;
 
-@Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Create Framed Inset Zoom")
+@Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Create framed inset Zoom")
 public class Inset_Creator implements Command {
 
 	@Parameter

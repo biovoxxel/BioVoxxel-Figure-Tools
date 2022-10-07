@@ -5,12 +5,8 @@ import java.io.IOException;
 
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
-import org.apache.batik.svggen.SVGSyntax;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public class SVGImageReader {
 	

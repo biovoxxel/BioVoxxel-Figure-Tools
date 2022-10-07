@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -618,13 +619,17 @@ public class SVG_Object_Factory {
 		try {
 			Writer writer = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
 			graphGen.stream(svgRoot, writer);
+			writer.close();
 		} catch (UnsupportedEncodingException e1) {
 			e1.printStackTrace();
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (SVGGraphics2DIOException e) {
 			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		
 	}
 	
 	
