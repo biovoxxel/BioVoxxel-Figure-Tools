@@ -183,13 +183,12 @@ public class SVG_Object_Factory {
 	
 	public static void saveImageAndOverlaysAsSVG(ImagePlus imp, File file, double interpolationInterval, boolean embedImage) {
 
-		ImagePlus inputImp = imp.duplicate();
-		
-		if (imp.isComposite()) {
-			ImageConverter ic = new ImageConverter(inputImp);
-			ic.convertToRGB();
-		} 		
-		
+		ImagePlus inputImp = imp.crop("whole-slice");
+				
+		ImageConverter ic = new ImageConverter(inputImp);
+		ImageConverter.setDoScaling(true);
+		ic.convertToRGB();
+				
 		SVG_Object_Factory svgDoc = new SVG_Object_Factory(inputImp);
 
 		if (interpolationInterval > 0.0) {
