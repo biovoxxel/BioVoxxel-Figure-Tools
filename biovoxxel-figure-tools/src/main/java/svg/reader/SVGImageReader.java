@@ -36,7 +36,7 @@ public class SVGImageReader {
 	
 	public void getImagePlusFromDocument(Document doc) {
 		
-	
+		//TODO: to be implemented
 		
 	}
 	
