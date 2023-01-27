@@ -2,12 +2,12 @@ package metadataRecorder;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.TextArea;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -37,11 +37,11 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
-import ij.IJ;
 import ij.ImagePlus;
 import ij.Prefs;
 import ij.WindowManager;
 import ij.plugin.frame.Recorder;
+import javax.swing.JLabel;
 
 /*
  * Copyright (C), 2023, Jan Brocher / BioVoxxel. All rights reserved.
@@ -72,6 +72,7 @@ import ij.plugin.frame.Recorder;
 public class MetadataRecorderGUI extends JFrame implements UndoableEditListener, KeyListener, FocusListener {
 
 	private static final long serialVersionUID = 8334480879178704804L;
+	private JLabel lblImageTitle;
 	private JPanel contentPane;
 	private JTextArea textArea;
 	private UndoManager undomanager = new UndoManager();
@@ -123,7 +124,9 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 							readMetadataFromImage();
 						}
 						
-						setTitle("Meta-D-Rex: " + imagePlus.getTitle());
+						//setTitle("Meta-D-Rex: " + imagePlus.getTitle());
+						lblImageTitle.setText(imagePlus.getTitle());
+						
 						
 					} else {
 						//System.out.println(lastRecordedLine + " is excluded according to settings");
@@ -136,6 +139,7 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 			}
 		}	
 	};
+	
 
 	
 	
@@ -154,9 +158,9 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 	 */
 	public MetadataRecorderGUI(ImagePlus imagePlus) {
 		this.imagePlus = imagePlus;
-		setTitle("Meta-D-Rex: " + imagePlus.getTitle());
+		setTitle("Meta-D-Rex");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 600, 300);
+		setBounds(100, 100, 500, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -179,9 +183,9 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 		popupMenu.add(chckbxmntmShowNativeRecorder);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWidths = new int[]{0, 0, 0};
-		gbl_contentPane.rowHeights = new int[]{0, 0, 0};
+		gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0};
 		gbl_contentPane.columnWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
-		gbl_contentPane.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
 		contentPane.setLayout(gbl_contentPane);
 		
 		JToggleButton tglbtnToggleRecording = new JToggleButton("<html><b>Pause recording");
@@ -200,11 +204,20 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 				} 
 			}
 		});
+		
+		lblImageTitle = new JLabel(imagePlus.getTitle());
+		GridBagConstraints gbc_lblImageTitle = new GridBagConstraints();
+		gbc_lblImageTitle.anchor = GridBagConstraints.WEST;
+		gbc_lblImageTitle.gridwidth = 2;
+		gbc_lblImageTitle.insets = new Insets(0, 0, 5, 5);
+		gbc_lblImageTitle.gridx = 0;
+		gbc_lblImageTitle.gridy = 0;
+		contentPane.add(lblImageTitle, gbc_lblImageTitle);
 		GridBagConstraints gbc_tglbtnToggleRecording = new GridBagConstraints();
 		gbc_tglbtnToggleRecording.anchor = GridBagConstraints.WEST;
 		gbc_tglbtnToggleRecording.insets = new Insets(0, 0, 5, 5);
 		gbc_tglbtnToggleRecording.gridx = 0;
-		gbc_tglbtnToggleRecording.gridy = 0;
+		gbc_tglbtnToggleRecording.gridy = 1;
 		contentPane.add(tglbtnToggleRecording, gbc_tglbtnToggleRecording);
 		
 		JButton btnSettings = new JButton("Settings");
@@ -216,7 +229,7 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 		GridBagConstraints gbc_btnSettings = new GridBagConstraints();
 		gbc_btnSettings.insets = new Insets(0, 0, 5, 0);
 		gbc_btnSettings.gridx = 1;
-		gbc_btnSettings.gridy = 0;
+		gbc_btnSettings.gridy = 1;
 		contentPane.add(btnSettings, gbc_btnSettings);
 		
 		
@@ -225,7 +238,7 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 		gbc_scrollPane.gridwidth = 2;
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
-		gbc_scrollPane.gridy = 1;
+		gbc_scrollPane.gridy = 2;
 		contentPane.add(scrollPane, gbc_scrollPane);
 		
 		textArea = new JTextArea();
@@ -241,8 +254,16 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 	
 
 	protected void openSettings() {
-		MetadataRecorderSettings frame = new MetadataRecorderSettings();
-		frame.setVisible(true);
+		
+		Window settingsDialog = WindowManager.getWindow("Metadata Recorder Settings");
+		
+		if (settingsDialog == null) {
+			MetadataRecorderSettings frame = new MetadataRecorderSettings();
+			WindowManager.addWindow(frame);
+			frame.setVisible(true);			
+		} else {
+			settingsDialog.toFront();
+		}
 	}
 
 	private void readMetadataFromImage() {

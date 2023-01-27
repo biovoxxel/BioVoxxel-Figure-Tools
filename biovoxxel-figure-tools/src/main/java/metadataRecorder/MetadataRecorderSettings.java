@@ -6,6 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,9 +17,11 @@ import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
 import ij.Prefs;
+import ij.WindowManager;
+
 import javax.swing.JLabel;
 
-public class MetadataRecorderSettings extends JFrame {
+public class MetadataRecorderSettings extends JFrame implements WindowListener {
 
 	/**
 	 * 
@@ -107,6 +111,52 @@ public class MetadataRecorderSettings extends JFrame {
 		gbc_btnCancel.gridx = 1;
 		gbc_btnCancel.gridy = 2;
 		contentPane.add(btnCancel, gbc_btnCancel);
+		
+		addWindowListener(this);
+		
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		WindowManager.removeWindow(this);
+		removeWindowListener(this);
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -20,7 +20,7 @@ import ij.plugin.frame.Recorder;
  * @author Jan Brocher / BioVoxxel
  *
  */
-@Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Metadata Recorder")
+@Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Meta-D-Rex")
 public class MetadataRecorder implements Command, WindowListener {
 	
 	protected static MetadataRecorderGUI METADATA_RECORDER = null;
@@ -32,17 +32,16 @@ public class MetadataRecorder implements Command, WindowListener {
 			JOptionPane.showMessageDialog(null, "No open image detected", "No Image", JOptionPane.ERROR_MESSAGE);
 		} else {
 			
-			Window existingMetadataRecorder = WindowManager.getWindow("Metadata Recorder");
+			Window existingMetadataRecorder = WindowManager.getWindow("Meta-D-Rex");
 			
 			if (existingMetadataRecorder == null) {
 				METADATA_RECORDER = new MetadataRecorderGUI(currentImage);
 				METADATA_RECORDER.setVisible(true);
 				METADATA_RECORDER.addWindowListener(this);
 				
-				
-				
 				WindowManager.addWindow(METADATA_RECORDER);
 			} else {
+				existingMetadataRecorder.toFront();
 				JOptionPane.showMessageDialog(null, "Metadata Recorder is already running", "Already Running", JOptionPane.ERROR_MESSAGE);
 			}
 		}
