@@ -182,9 +182,9 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 		});
 		popupMenu.add(chckbxmntmShowNativeRecorder);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.columnWidths = new int[]{0, 0, 0};
+		gbl_contentPane.columnWidths = new int[]{0, 0, 0, 0};
 		gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0};
-		gbl_contentPane.columnWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
+		gbl_contentPane.columnWeights = new double[]{1.0, 0.0, 0.0, Double.MIN_VALUE};
 		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
 		contentPane.setLayout(gbl_contentPane);
 		
@@ -208,8 +208,8 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 		lblImageTitle = new JLabel(imagePlus.getTitle());
 		GridBagConstraints gbc_lblImageTitle = new GridBagConstraints();
 		gbc_lblImageTitle.anchor = GridBagConstraints.WEST;
-		gbc_lblImageTitle.gridwidth = 2;
-		gbc_lblImageTitle.insets = new Insets(0, 0, 5, 5);
+		gbc_lblImageTitle.gridwidth = 3;
+		gbc_lblImageTitle.insets = new Insets(0, 0, 5, 0);
 		gbc_lblImageTitle.gridx = 0;
 		gbc_lblImageTitle.gridy = 0;
 		contentPane.add(lblImageTitle, gbc_lblImageTitle);
@@ -226,16 +226,28 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 				openSettings();
 			}
 		});
+		
+		JButton btnReadImage = new JButton("Reload data");
+		btnReadImage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textArea.setText(WindowManager.getCurrentImage().getInfoProperty());
+			}
+		});
+		GridBagConstraints gbc_btnReadImage = new GridBagConstraints();
+		gbc_btnReadImage.insets = new Insets(0, 0, 5, 5);
+		gbc_btnReadImage.gridx = 1;
+		gbc_btnReadImage.gridy = 1;
+		contentPane.add(btnReadImage, gbc_btnReadImage);
 		GridBagConstraints gbc_btnSettings = new GridBagConstraints();
 		gbc_btnSettings.insets = new Insets(0, 0, 5, 0);
-		gbc_btnSettings.gridx = 1;
+		gbc_btnSettings.gridx = 2;
 		gbc_btnSettings.gridy = 1;
 		contentPane.add(btnSettings, gbc_btnSettings);
 		
 		
 		JScrollPane scrollPane = new JScrollPane();
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-		gbc_scrollPane.gridwidth = 2;
+		gbc_scrollPane.gridwidth = 3;
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 2;
