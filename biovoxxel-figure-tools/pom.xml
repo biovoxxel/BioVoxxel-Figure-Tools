@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.biovoxxel</groupId>
   <artifactId>BioVoxxel_Figure_Tools</artifactId>
-  <version>1.6.0b</version>
+  <version>1.6.1b</version>
   <name>BioVoxxel Figure Tools</name>
   <description>The SVG Exporter is meant to export images and all related overlays in images, embedd images and objects in SVG files to enable loss-less scalability of scientific data. The Create Framed Inset Zoom function allows to create scaled copies of an image area with a certain integer zoom factor to prevent pixel alterations but keeping the original scaling information to allow proper scale bar addition.
 The metadata recorder (Meta-D-Rex) records processing steps image-specific and saves them in the image's header to reproducibly store image processing steps.</description>

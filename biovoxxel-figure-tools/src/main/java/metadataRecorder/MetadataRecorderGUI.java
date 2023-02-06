@@ -261,7 +261,8 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 		textArea.addFocusListener(this);		
 				
 		addTextListenerToRecorder();
-	
+		
+		readMetadataFromImage();
 	}
 	
 
