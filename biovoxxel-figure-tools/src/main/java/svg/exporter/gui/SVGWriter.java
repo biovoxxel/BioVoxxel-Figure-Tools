@@ -11,7 +11,6 @@ import org.scijava.plugin.Plugin;
 import ij.ImagePlus;
 import ij.WindowManager;
 import svg.exporter.objects.SVG_Object_Factory;
-import svg.utilities.SvgUtilities;
 
 
 /**
