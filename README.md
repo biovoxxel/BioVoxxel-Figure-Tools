@@ -8,6 +8,8 @@ The BioVoxxel Figure tools are automatically installed together with the BioVoxx
 
 Run: >Help >Update... and activate the BioVoxxel update site and then apply changes in the updater.
 
+The *BioVoxxel Figure Tools* come with a convenience menu which can be retreived from the `More >>` tools icon.
+
 
 ## Functions
 
@@ -15,14 +17,26 @@ Run: >Help >Update... and activate the BioVoxxel update site and then apply chan
 
 ![image](https://user-images.githubusercontent.com/10721817/213475119-ac5dd2dc-e214-45d9-9499-ecc0df0311ca.png)
 
-The functions allow exporting images together with all added overlays (ROIs from a Roi Manager, scale bars, calibration bars, arrows, etc.) in one step into an SVG vector graphics file. It supports multichannel composite images (so no need to flatten to an RGB). In composite images only visible channels will be exported enabling the user to export different versions of channel merges in an easy manner. 
-Even more convenient, you can export all open images at once as individual SVG files and import them easily in Inkscape (unfortunately Adobe Illustrator seems to currently not support this saved SVG file type).
+The functions allow exporting images together with all added overlays (ROIs from a Roi Manager, scale bars, calibration bars, arrows, etc.) in one step into an SVG vector graphics file. It supports multichannel composite images and ImageJ hyperstacks (so no need to flatten to an RGB). In composite images only visible channels will be exported enabling the user to export different versions of channel merges in an easy manner. 
+Even more convenient, you can export all open images at once as individual SVG files and import them easily in [Inkscape](https://inkscape.org/) (unfortunately Adobe Illustrator (TM) seems to currently not support this saved SVG file type).
 Simple zoomed-in inset images can be created at fixed size changes to avoid pixel artifacts 
 
 ### Aligned SVGs in Inkscape after export from ImageJ
 
 ![image](https://user-images.githubusercontent.com/10721817/213476261-4ce8f48c-4725-4e45-b689-6da70fa47d82.png)
 
+### Exporting time points of time series (also from Hyperstacks)
+
+The function `Export Time Series to SVGs` allows to export time points from a specific starting point on with a defines increment as individual SVGs.
+For hyperstacks containing z-slices only the visible (active) z-slice will be exported. Visible composite channels will be merged and all overlays will be exported as vector graphics objects.
+
+![image](https://user-images.githubusercontent.com/10721817/220351083-ff3c2eb7-f793-4b5b-9ba9-2a964306045d.png)
+
+Image source: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6139958.svg)](https://doi.org/10.5281/zenodo.6139958)
+
+Those can then be imported in [Inkscape](https://inkscape.org/) and easily arranged with a grid alignment functionalitiy
+
+![image](https://user-images.githubusercontent.com/10721817/220352194-e96a0b8b-26ef-4916-b48d-f73b0bee6e68.png)
 
 ### Metadate Recording with *Meta-D-Rex*
 
