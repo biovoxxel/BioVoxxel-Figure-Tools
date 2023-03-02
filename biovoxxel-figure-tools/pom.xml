@@ -2,10 +2,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.biovoxxel</groupId>
   <artifactId>BioVoxxel_Figure_Tools</artifactId>
-  <version>1.7.0b</version>
+  <version>1.8.1b</version>
   <name>BioVoxxel Figure Tools</name>
   <description>The SVG Exporter is meant to export images and all related overlays in images, embedd images and objects in SVG files to enable loss-less scalability of scientific data. The Create Framed Inset Zoom function allows to create scaled copies of an image area with a certain integer zoom factor to prevent pixel alterations but keeping the original scaling information to allow proper scale bar addition.
-The metadata recorder (Meta-D-Rex) records processing steps image-specific and saves them in the image's header to reproducibly store image processing steps.</description>
+The metadata recorder (Meta-D-Rex) records processing steps image-specific and saves them in the image's header to reproducibly store image processing steps.
+The LUT Channels Tool allows to customize personal favorite LUTs, tests Color deficient vision and reproduces most important functionalities of the IJ Channels Tool as an alternative to the latter.</description>
   <inceptionYear>2022</inceptionYear>
 	
 	<url>tbd</url>
@@ -97,6 +98,7 @@ The metadata recorder (Meta-D-Rex) records processing steps image-specific and s
 			<scope>provided</scope>
 			<version>1.53t</version>
 		</dependency>
+		
 		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
 		<dependency>
 		    <groupId>commons-io</groupId>
@@ -136,6 +138,16 @@ The metadata recorder (Meta-D-Rex) records processing steps image-specific and s
 					<includes>
 						<include>plugins.config</include>
 					</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources/macros</directory>			
+					<includes>
+						<include>CDV_Test.ijm</include>
+					</includes>
+					<targetPath>
+						${project.build.outputDirectory}/macros/
+					</targetPath>
+									
 			</resource>
 		</resources>
 	  <plugins>
