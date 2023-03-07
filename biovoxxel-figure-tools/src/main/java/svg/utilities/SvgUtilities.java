@@ -10,6 +10,7 @@ import ij.gui.Arrow;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.process.FloatPolygon;
+import ij.process.LUT;
 
 public class SvgUtilities {
 
@@ -122,40 +123,55 @@ public class SvgUtilities {
 	
 	public static Roi interpolateRoi(Roi roi, double interpolationInterval, boolean smooth) {
 		
-			int roiType = roi.getType();
-			System.out.println("roiType = " + roiType);
-			
-			PolygonRoi interpolatedPolygonRoi = null;
-			
-			if (roiType!=Roi.LINE && roiType!=Roi.ANGLE && roiType!=Roi.POINT && !(roi instanceof Arrow) && interpolationInterval != 0) {
-					
-				FloatPolygon interpolatedPolygon;
-				interpolatedPolygon = roi.getInterpolatedPolygon(interpolationInterval, smooth);							
-					
-				if (roiType==Roi.COMPOSITE) {
-
-					roiType = Roi.TRACED_ROI;
-
-				} else if (roiType==Roi.RECTANGLE || roiType==Roi.OVAL) {
-
-					roiType = Roi.POLYGON;
-
-				}
+		int roiType = roi.getType();
+		System.out.println("roiType = " + roiType);
+		
+		PolygonRoi interpolatedPolygonRoi = null;
+		
+		if (roiType!=Roi.LINE && roiType!=Roi.ANGLE && roiType!=Roi.POINT && !(roi instanceof Arrow) && interpolationInterval != 0) {
 				
-				interpolatedPolygonRoi = new PolygonRoi(interpolatedPolygon, roiType);
+			FloatPolygon interpolatedPolygon;
+			interpolatedPolygon = roi.getInterpolatedPolygon(interpolationInterval, smooth);							
+				
+			if (roiType==Roi.COMPOSITE) {
 
-				interpolatedPolygonRoi.setFillColor(roi.getFillColor());
-				interpolatedPolygonRoi.setStrokeColor(roi.getStrokeColor());
-				interpolatedPolygonRoi.setStrokeWidth(roi.getStrokeWidth());
-			
-				return interpolatedPolygonRoi;
-				
-			} else {
-				
-				return roi;
-				
+				roiType = Roi.TRACED_ROI;
+
+			} else if (roiType==Roi.RECTANGLE || roiType==Roi.OVAL) {
+
+				roiType = Roi.POLYGON;
+
 			}
+			
+			interpolatedPolygonRoi = new PolygonRoi(interpolatedPolygon, roiType);
+
+			interpolatedPolygonRoi.setFillColor(roi.getFillColor());
+			interpolatedPolygonRoi.setStrokeColor(roi.getStrokeColor());
+			interpolatedPolygonRoi.setStrokeWidth(roi.getStrokeWidth());
+		
+			return interpolatedPolygonRoi;
+			
+		} else {
+			
+			return roi;
+			
 		}
+	}
+	
+	public static LUT getGrayLut() {
+		byte[] reds = new byte[256];
+		byte[] greens = new byte[256];
+		byte[] blues = new byte[256];
+		
+		for (int i = 0; i < 256; i++) {
+			reds[i] = (byte)i;
+			greens[i] = (byte)i;
+			blues[i] = (byte)i;
+		}
+		
+		return new LUT(reds, greens, blues);
+	}
+	
 		
 
 }
