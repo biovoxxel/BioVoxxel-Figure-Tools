@@ -39,6 +39,8 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JMenuItem;
+import java.awt.event.MouseWheelListener;
+import java.awt.event.MouseWheelEvent;
 
 
 @Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>LUT Channels Tool")
@@ -52,13 +54,14 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
    	
 	
 	public ImagePlus currentImagePlus;
-	private int maxNumberOfChannels = 7;
+	private int maxNumberOfChannels = 8;
 	private JCheckBox[] checkBoxGroup = new JCheckBox[maxNumberOfChannels];
 	private CompositeImage ci;
 	private JButton btnSplitChannels;
 	private JButton btnMergeChanels;
 	private JPopupMenu popupMenu;
 	private JMenuItem mntmAlternativeLutPath;
+	private JPanel panelChannelCheckboxes;
 	
 	
 	/**
@@ -94,10 +97,10 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		
 		int x = (int) Math.round(Prefs.get("biovoxxel.lut.button.tool.x", 100));
 		int y = (int) Math.round(Prefs.get("biovoxxel.lut.button.tool.y", 100));
-		int width = (int) Math.round(Prefs.get("biovoxxel.lut.button.tool.width", 350));
-		int height = (int) Math.round(Prefs.get("biovoxxel.lut.button.tool.height", 450));
+		int width = (int) Math.round(Prefs.get("biovoxxel.lut.button.tool.width", 300));
+		int height = (int) Math.round(Prefs.get("biovoxxel.lut.button.tool.height", 480));
 		setBounds(x, y, width, height);
-//		setBounds(100, 100, 350, 450);	//for Windowbuilder
+//		setBounds(100, 100, 300, 480);	//for Windowbuilder
 		
 		
 		contentPane = new JPanel();
@@ -123,6 +126,14 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		contentPane.setLayout(gbl_contentPane);
 		
 		comboBox = new JComboBox<String>();
+		comboBox.addMouseWheelListener(new MouseWheelListener() {
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				int currentIndex = comboBox.getSelectedIndex();
+				if (currentIndex + e.getWheelRotation() >= 0 && currentIndex + e.getWheelRotation() < comboBox.getModel().getSize() && currentIndex + e.getWheelRotation() >= 0) {
+					comboBox.setSelectedIndex(currentIndex + e.getWheelRotation());
+				}
+			}
+		});
 		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"Composite", "Composite Invert", "Color", "Grayscale"}));
 		comboBox.setSelectedIndex(0);
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
@@ -164,6 +175,7 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 			}
 		});
 		
+				
 		btnCDV = new JButton("CDV Test");
 		btnCDV.setToolTipText("Display the main color deficient vision simulation of the current image");
 		btnCDV.addActionListener(new ActionListener() {
@@ -172,12 +184,21 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 			}
 		});
 		GridBagConstraints gbc_btnCDV = new GridBagConstraints();
-		gbc_btnCDV.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnCDV.insets = new Insets(0, 0, 5, 0);
+		gbc_btnCDV.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnCDV.gridwidth = 3;
 		gbc_btnCDV.gridx = 4;
 		gbc_btnCDV.gridy = 0;
 		contentPane.add(btnCDV, gbc_btnCDV);
+			
+		panelChannelCheckboxes = new JPanel();
+		GridBagConstraints gbc_panelChannelCheckboxes = new GridBagConstraints();
+		gbc_panelChannelCheckboxes.gridwidth = 7;
+		gbc_panelChannelCheckboxes.insets = new Insets(0, 0, 5, 5);
+		gbc_panelChannelCheckboxes.fill = GridBagConstraints.BOTH;
+		gbc_panelChannelCheckboxes.gridx = 0;
+		gbc_panelChannelCheckboxes.gridy = 1;
+		contentPane.add(panelChannelCheckboxes, gbc_panelChannelCheckboxes);
 		
 		GridBagConstraints[] gbc_chckbx = new GridBagConstraints[maxNumberOfChannels];
 		for (int cbg = 0; cbg < maxNumberOfChannels; cbg++) {
@@ -187,12 +208,11 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 			gbc_chckbx[cbg].insets = new Insets(0, 0, 5, 5);
 			gbc_chckbx[cbg].gridx = cbg;
 			gbc_chckbx[cbg].gridy = 1;
-			contentPane.add(checkBoxGroup[cbg], gbc_chckbx[cbg]);
+			panelChannelCheckboxes.add(checkBoxGroup[cbg], gbc_chckbx[cbg]);
 			
 			checkBoxGroup[cbg].addActionListener(this);
 			
-		}
-				
+		}		
 		
 		JPanel buttonPanel = new JPanel();
 		GridBagConstraints gbc_buttonPanel = new GridBagConstraints();
@@ -214,7 +234,7 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 			}
 		});
 		GridBagConstraints gbc_btnSplitChannels = new GridBagConstraints();
-		gbc_btnSplitChannels.gridwidth = 3;
+		gbc_btnSplitChannels.gridwidth = 2;
 		gbc_btnSplitChannels.insets = new Insets(0, 0, 0, 5);
 		gbc_btnSplitChannels.gridx = 0;
 		gbc_btnSplitChannels.gridy = 3;
@@ -231,14 +251,13 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 			}
 		});
 		GridBagConstraints gbc_btnMergeChanels = new GridBagConstraints();
-		gbc_btnMergeChanels.gridwidth = 3;
+		gbc_btnMergeChanels.gridwidth = 2;
 		gbc_btnMergeChanels.insets = new Insets(0, 0, 0, 5);
-		gbc_btnMergeChanels.gridx = 3;
+		gbc_btnMergeChanels.gridx = 2;
 		gbc_btnMergeChanels.gridy = 3;
 		contentPane.add(btnMergeChanels, gbc_btnMergeChanels);
 		
 		ImagePlus lutButtonIcon = IJ.createImage("", "8-bit ramp", 64, 20, 1);
-		
 		
 		
 		File[] lutFiles = getFileList(RELATIVE_PATH_TO_LUT_FILE_FOLDER, ".lut");
@@ -312,7 +331,6 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		Prefs.set("biovoxxel.lut.button.panel.lut.folder", RELATIVE_PATH_TO_LUT_FILE_FOLDER);
 		
 		dispose();
-		WindowManager.removeWindow(this);
 		run();
 	}
 
@@ -348,7 +366,7 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		
 		File folder = new File(path);
 		File[] fileList = folder.listFiles();			
-		System.out.println("fileList.length = " + fileList.length);
+//		System.out.println("fileList.length = " + fileList.length);
 		
 		return fileList;
 	}
@@ -360,13 +378,13 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		
 		if (modeString != null && !modeString.equals("Sum") && compImpProp==null) {
 			ci.setProp("CompositeProjection", modeString);
-		}
+		} 
 		
 		if (mode==IJ.COMPOSITE && (("Min".equals(modeString)||"Invert".equals(modeString)) && !currentImagePlus.isInvertedLut()) 
 			|| ("Max".equals(modeString)||"Sum".equals(modeString)) && currentImagePlus.isInvertedLut()) {
 			
 			//workaround for the not error-free implementation in Java
-			
+			System.out.println("Inverting all LUTs");
 			IJ.runMacro("// \"Invert all LUTs\"\r\n"
 					+ "// Converts all LUTs in a multi-channel image between\r\n"
 					+ "// inverted and non inverted and switches the\r\n"
@@ -436,7 +454,7 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 					+ "    return rgb;\r\n"
 					+ "}");
 			
-// The implementation of the upper macro in Java does not jet work error-free
+// The implementation of the upper macro in Java does not yet work error-free
 			
 //			byte[] old_reds = new byte[256];
 //			byte[] old_greens = new byte[256];
@@ -541,6 +559,11 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 			return;
 		}
 		
+		if (currentImagePlus.isRGB()) {
+			JOptionPane.showMessageDialog(null, "LUTs cannot be applied on RGB images", "RGB not supported", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
 		ImageProcessor ip = null;
 		if (currentImagePlus != null && currentImagePlus.isComposite()) {
 			ip = currentImagePlus.getChannelProcessor();
@@ -557,13 +580,14 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 //				System.out.println(file.getAbsolutePath());
 				
 				LUT activeLUT = LutLoader.openLut(file.getAbsolutePath());
+				
 				if (currentImagePlus.isComposite() && ci != null) {
 					ci.setChannelLut(activeLUT);
 				} else {
 					ip.setLut(activeLUT);					
 				}
 //				System.out.println("apply " + activeLUT);
-
+								
 				currentImagePlus.updateChannelAndDraw();
 								
 			} catch (Exception e) {
@@ -577,6 +601,17 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 
 	@Override
 	public void windowClosing(WindowEvent e) {
+		storeAndCleanUp();
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		storeAndCleanUp();
+	}
+	
+	
+	private void storeAndCleanUp() {
 		Rectangle frameBounds = getBounds();
 		
 		Prefs.set("biovoxxel.lut.button.tool.x", frameBounds.x);
@@ -585,13 +620,6 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		Prefs.set("biovoxxel.lut.button.tool.height", frameBounds.height);
 		
 		WindowManager.removeWindow(this);
-		
-	}
-
-	@Override
-	public void windowClosed(WindowEvent e) {
-		
-		
 	}
 
 	@Override
