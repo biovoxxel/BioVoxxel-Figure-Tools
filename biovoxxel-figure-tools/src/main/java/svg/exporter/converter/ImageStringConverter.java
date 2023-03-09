@@ -50,7 +50,10 @@ public class ImageStringConverter {
 		
 		byte[] imageAsByteArray = Base64.getDecoder().decode(bas64String);
 		
-		FileUtils.writeByteArrayToFile(new File(filePath), imageAsByteArray);
+		File tempFile = new File(filePath);
+		tempFile.deleteOnExit();
+		
+		FileUtils.writeByteArrayToFile(tempFile, imageAsByteArray);
 				
 		ImagePlus decodedImage = new ImagePlus(filePath);
 		
