@@ -112,6 +112,8 @@ public class SVG_Object_Factory {
 		svgRoot.setAttributeNS(svgNS, SVGSyntax.SVG_VIEW_BOX_ATTRIBUTE, docViewBox);
 		svgRoot.setAttributeNS(svgNS, SVGSyntax.SVG_WIDTH_ATTRIBUTE, docWidth + pageUnits);
 		svgRoot.setAttributeNS(svgNS, SVGSyntax.SVG_HEIGHT_ATTRIBUTE, docHeight + pageUnits);
+		svgRoot.setAttribute("xmlns:sodipodi", sodipodiNS);
+		svgRoot.setAttribute("xmlns:inkscape", inkscapeNS);
 	
 	}
 	
