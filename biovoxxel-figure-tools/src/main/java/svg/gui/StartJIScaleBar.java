@@ -1,4 +1,4 @@
-package svg.exporter.gui;
+package svg.gui;
 
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;

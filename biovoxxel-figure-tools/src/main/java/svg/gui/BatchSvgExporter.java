@@ -1,4 +1,4 @@
-package svg.exporter.gui;
+package svg.gui;
 
 
 import java.io.File;

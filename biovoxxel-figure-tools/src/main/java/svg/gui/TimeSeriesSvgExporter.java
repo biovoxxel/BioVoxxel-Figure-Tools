@@ -1,4 +1,4 @@
-package svg.exporter.gui;
+package svg.gui;
 
 import java.io.File;
 
@@ -17,7 +17,7 @@ import svg.exporter.objects.SVG_Object_Factory;
  * @author Jan Brocher / BioVoxxel
  *
  */
-@Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Export Time Series as SVGs")
+@Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Export time series as SVGs")
 public class TimeSeriesSvgExporter implements Command {
 	
 	private String subfolderPath = "";
