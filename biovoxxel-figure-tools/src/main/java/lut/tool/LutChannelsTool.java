@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.util.Iterator;
+import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -60,7 +62,6 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 	private JButton btnSplitChannels;
 	private JButton btnMergeChanels;
 	private JPopupMenu popupMenu;
-	private JMenuItem mntmAlternativeLutPath;
 	private JPanel panelChannelCheckboxes;
 	
 	
@@ -109,15 +110,32 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		setContentPane(contentPane);
 		
 		popupMenu = new JPopupMenu();
+		
+		Vector<File> lutFolderList = getFileList(IJ.getDirectory("luts"), null);
+		
+		for (int lutFolder = 0; lutFolder < lutFolderList.size(); lutFolder++) {
+			
+			if (lutFolderList.get(lutFolder).isDirectory()) {
+				
+				final String LUT_FILE_FOLDER = lutFolderList.get(lutFolder).getAbsolutePath();
+				
+				System.out.println(lutFolderList.get(lutFolder).getName());
+				
+				JMenuItem mntmAlternativeLutPath = new JMenuItem(lutFolderList.get(lutFolder).getName());
+				mntmAlternativeLutPath.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						
+						RELATIVE_PATH_TO_LUT_FILE_FOLDER = LUT_FILE_FOLDER;
+						
+						setAlternativeLutPath();				
+					}
+				});
+				popupMenu.add(mntmAlternativeLutPath);
+			}
+			
+		}
 		addPopup(contentPane, popupMenu);
 		
-		mntmAlternativeLutPath = new JMenuItem("Alternative LUT folder path");
-		mntmAlternativeLutPath.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setAlternativeLutPath();				
-			}
-		});
-		popupMenu.add(mntmAlternativeLutPath);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0};
@@ -260,23 +278,25 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		ImagePlus lutButtonIcon = IJ.createImage("", "8-bit ramp", 64, 20, 1);
 		
 		
-		File[] lutFiles = getFileList(RELATIVE_PATH_TO_LUT_FILE_FOLDER, ".lut");
+		Vector<File> lutFiles = getFileList(RELATIVE_PATH_TO_LUT_FILE_FOLDER, ".lut");
 		
-		if (lutFiles == null || lutFiles.length == 0) {
+		if (lutFiles == null || lutFiles.size() == 0) {
 			JOptionPane.showMessageDialog(null, "Specified folder is not a folder or does not contain LUT files", "No LUTs detected", JOptionPane.ERROR_MESSAGE);
-			return;
+			lutFiles = getFileList(IJ.getDirectory("luts") + "LutButtonPanel" + File.separator, ".lut");
 		}
 		
-		JButton[] lutButton = new JButton[lutFiles.length];
-		GridBagConstraints[] gbc_panelLUTButtons = new GridBagConstraints[lutFiles.length];
+		JButton[] lutButton = new JButton[lutFiles.size()];
+		GridBagConstraints[] gbc_panelLUTButtons = new GridBagConstraints[lutFiles.size()];
 		
-		for(int b=0; b<lutFiles.length; b++) {
+		for(int b=0; b<lutFiles.size(); b++) {
 			try {
 				lutButton[b] = new JButton();
-				lutButton[b].setName(lutFiles[b].getName());
-				lutButton[b].setToolTipText(lutFiles[b].getName());
+				File lutFile = lutFiles.get(b);
 				
-				LUT currentLUT = LutLoader.openLut(lutFiles[b].getAbsolutePath());
+				lutButton[b].setName(lutFile.getName());
+				lutButton[b].setToolTipText(lutFile.getName());
+				
+				LUT currentLUT = LutLoader.openLut(lutFile.getAbsolutePath());
 				ImageProcessor newLutButtonIconProcessor = lutButtonIcon.getProcessor().duplicate();
 				
 				newLutButtonIconProcessor.setLut(currentLUT);
@@ -307,13 +327,14 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		}
 	}
 
+
 	protected void setAlternativeLutPath() {
-		try {
-			RELATIVE_PATH_TO_LUT_FILE_FOLDER = JOptionPane.showInputDialog(null, "LUT Directory", RELATIVE_PATH_TO_LUT_FILE_FOLDER).trim();
-		} catch (NullPointerException e) {
-			
-		}
-						
+//		try {
+//			RELATIVE_PATH_TO_LUT_FILE_FOLDER = JOptionPane.showInputDialog(null, "LUT Directory", RELATIVE_PATH_TO_LUT_FILE_FOLDER).trim();
+//		} catch (NullPointerException e) {
+//			
+//		}
+								
 		if (RELATIVE_PATH_TO_LUT_FILE_FOLDER.equals("")) {
 			RELATIVE_PATH_TO_LUT_FILE_FOLDER = IJ.getDirectory("luts") + "LutButtonPanel" + File.separator;
 		} 
@@ -362,13 +383,33 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 	
 	}
 
-	private static File[] getFileList(String path, String fileEnding) {
+	/**
+	 * 
+	 * @param path
+	 * @param fileEnding can be null, this returns the complete file list, otherwise only files with the specified ending
+	 * @return Vector<File>
+	 */
+	private static Vector<File> getFileList(String path, String fileEnding) {
 		
 		File folder = new File(path);
-		File[] fileList = folder.listFiles();			
-//		System.out.println("fileList.length = " + fileList.length);
+		File[] fileList = folder.listFiles();
+
+		Vector<File> specificFileList = new Vector<File>();
 		
-		return fileList;
+		if (fileEnding != null) {
+			for (int f = 0; f < fileList.length; f++) {
+				
+				if (fileList[f].getAbsolutePath().endsWith(fileEnding)) {
+					specificFileList.add(fileList[f]);
+				}
+			}			
+		} else {
+			for (int f = 0; f < fileList.length; f++) {
+				specificFileList.add(fileList[f]);
+			}
+		}
+	
+		return specificFileList;
 	}
 	
 	private void invertLUTs(int mode, String modeString) {
