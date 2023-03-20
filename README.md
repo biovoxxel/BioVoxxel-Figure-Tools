@@ -70,5 +70,6 @@ Tools like QuickFigure are amazing and offer more options. I personally, however
 ---
 
 ### Acknowledgement
+[](url)
 
-Thanks to [@Wayne]([url](https://forum.image.sc/u/wayne/summary)) (Rasband), [@K_Taz]([url](https://forum.image.sc/u/k_taz/summary)) (Kévin Terretaz), [@NicoDF]([url](https://forum.image.sc/u/nicodf/summary)) (Nicolás De Francesco) for the implementation of the inverting LUT function.
+Thanks to [@Wayne](https://forum.image.sc/u/wayne/summary) (Rasband), [@K_Taz](https://forum.image.sc/u/k_taz/summary) (Kévin Terretaz), [@NicoDF](https://forum.image.sc/u/nicodf/summary) (Nicolás De Francesco) for the implementation of the inverting LUT function.
