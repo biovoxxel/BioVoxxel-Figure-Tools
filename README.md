@@ -66,3 +66,9 @@ Tools like QuickFigure are amazing and offer more options. I personally, however
 * The figure creation tools also offers to Create a framed inset zoom version of a selected area, which uses fixed frame sizes (this is where a small restriction exists) but creates a zoomed inset as separate image with the original image quality, without interpolation and correct scaling information to add an updated scale bar.
 * All indicators like scale bars, calibration bars and all other ROIs in the image overlay should be transferred as editable vector graphics objects
 * best, some metadata is still present. Therefore, the SVG export adds all metadata present in ImageJ to the Image description of the SVG file (see below), which can then be revised in Inkscape still (unfortunately it does not transfer to PDFs)
+
+---
+
+### Acknowledgement
+
+Thanks to [@Wayne]([url](https://forum.image.sc/u/wayne/summary)) (Rasband), [@K_Taz]([url](https://forum.image.sc/u/k_taz/summary)) (Kévin Terretaz), [@NicoDF]([url](https://forum.image.sc/u/nicodf/summary)) (Nicolás De Francesco) for the implementation of the inverting LUT function.
