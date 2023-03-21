@@ -1,5 +1,6 @@
 package lut.tool;
 
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -9,10 +10,13 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
@@ -21,8 +25,10 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
 
 import org.scijava.command.Command;
@@ -36,13 +42,7 @@ import ij.WindowManager;
 import ij.plugin.LutLoader;
 import ij.process.ImageProcessor;
 import ij.process.LUT;
-import javax.swing.JPopupMenu;
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.JMenuItem;
-import java.awt.event.MouseWheelListener;
-import java.awt.event.MouseWheelEvent;
+import javax.swing.JSeparator;
 
 
 @Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>LUT Channels Tool")
@@ -51,7 +51,8 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 	private static final long serialVersionUID = -8417843918812937098L;
 	private JPanel contentPane;
 	private JComboBox<String> comboBox;
-    private static String RELATIVE_PATH_TO_LUT_FILE_FOLDER = Prefs.get("biovoxxel.lut.button.panel.lut.folder", IJ.getDirectory("luts") + "LutButtonPanel" + File.separator);
+	private static String IJ_LUT_FOLDER = IJ.getDirectory("luts") + File.separator;
+    private static String RELATIVE_PATH_TO_LUT_FILE_FOLDER = Prefs.get("biovoxxel.lut.button.panel.lut.folder", IJ_LUT_FOLDER);
     private JButton btnCDV;
    	
 	
@@ -63,6 +64,8 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 	private JButton btnMergeChanels;
 	private JPopupMenu popupMenu;
 	private JPanel panelChannelCheckboxes;
+	private JSeparator separator;
+	private JButton btnInvertLut;
 	
 	
 	/**
@@ -111,7 +114,20 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		
 		popupMenu = new JPopupMenu();
 		
-		Vector<File> lutFolderList = getFileList(IJ.getDirectory("luts"), null);
+		JMenuItem mntmGeneralLutMenu = new JMenuItem("IJ LUTs");
+		mntmGeneralLutMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				RELATIVE_PATH_TO_LUT_FILE_FOLDER = IJ_LUT_FOLDER;
+				
+				setAlternativeLutPath();				
+			}
+		});
+		popupMenu.add(mntmGeneralLutMenu);
+		separator = new JSeparator();
+		popupMenu.add(separator);
+		
+		Vector<File> lutFolderList = getFileList(IJ_LUT_FOLDER, null);
 		
 		for (int lutFolder = 0; lutFolder < lutFolderList.size(); lutFolder++) {
 			
@@ -135,7 +151,7 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 			
 		}
 		addPopup(contentPane, popupMenu);
-		
+						
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0};
@@ -193,26 +209,23 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 			}
 		});
 		
-				
-		btnCDV = new JButton("CDV Test");
-		btnCDV.setToolTipText("Display the main color deficient vision simulation of the current image");
-		btnCDV.addActionListener(new ActionListener() {
+		btnInvertLut = new JButton("Invert");
+		btnInvertLut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				performCdvTest();				
+				invertSingleChannelLUT();
 			}
 		});
-		GridBagConstraints gbc_btnCDV = new GridBagConstraints();
-		gbc_btnCDV.insets = new Insets(0, 0, 5, 0);
-		gbc_btnCDV.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnCDV.gridwidth = 3;
-		gbc_btnCDV.gridx = 4;
-		gbc_btnCDV.gridy = 0;
-		contentPane.add(btnCDV, gbc_btnCDV);
+		GridBagConstraints gbc_btnInvertLut = new GridBagConstraints();
+		gbc_btnInvertLut.gridwidth = 3;
+		gbc_btnInvertLut.insets = new Insets(0, 0, 5, 5);
+		gbc_btnInvertLut.gridx = 4;
+		gbc_btnInvertLut.gridy = 0;
+		contentPane.add(btnInvertLut, gbc_btnInvertLut);
 			
 		panelChannelCheckboxes = new JPanel();
 		GridBagConstraints gbc_panelChannelCheckboxes = new GridBagConstraints();
 		gbc_panelChannelCheckboxes.gridwidth = 7;
-		gbc_panelChannelCheckboxes.insets = new Insets(0, 0, 5, 5);
+		gbc_panelChannelCheckboxes.insets = new Insets(0, 0, 5, 0);
 		gbc_panelChannelCheckboxes.fill = GridBagConstraints.BOTH;
 		gbc_panelChannelCheckboxes.gridx = 0;
 		gbc_panelChannelCheckboxes.gridy = 1;
@@ -275,14 +288,29 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		gbc_btnMergeChanels.gridy = 3;
 		contentPane.add(btnMergeChanels, gbc_btnMergeChanels);
 		
+				
+		btnCDV = new JButton("CDV Test");
+		btnCDV.setToolTipText("Display the main color deficient vision simulation of the current image");
+		btnCDV.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				performCdvTest();				
+			}
+		});
+		GridBagConstraints gbc_btnCDV = new GridBagConstraints();
+		gbc_btnCDV.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnCDV.gridwidth = 3;
+		gbc_btnCDV.gridx = 4;
+		gbc_btnCDV.gridy = 3;
+		contentPane.add(btnCDV, gbc_btnCDV);
+		
 		ImagePlus lutButtonIcon = IJ.createImage("", "8-bit ramp", 64, 20, 1);
 		
-		
+//		System.out.println(RELATIVE_PATH_TO_LUT_FILE_FOLDER);
 		Vector<File> lutFiles = getFileList(RELATIVE_PATH_TO_LUT_FILE_FOLDER, ".lut");
 		
 		if (lutFiles == null || lutFiles.size() == 0) {
 			JOptionPane.showMessageDialog(null, "Specified folder is not a folder or does not contain LUT files", "No LUTs detected", JOptionPane.ERROR_MESSAGE);
-			lutFiles = getFileList(IJ.getDirectory("luts") + "LutButtonPanel" + File.separator, ".lut");
+			lutFiles = getFileList(IJ_LUT_FOLDER + "LutButtonPanel" + File.separator, ".lut");
 		}
 		
 		JButton[] lutButton = new JButton[lutFiles.size()];
@@ -328,6 +356,11 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 	}
 
 
+	protected void invertSingleChannelLUT() {
+		
+		IJ.run(currentImagePlus, "Invert LUT", "");
+	}
+
 	protected void setAlternativeLutPath() {
 //		try {
 //			RELATIVE_PATH_TO_LUT_FILE_FOLDER = JOptionPane.showInputDialog(null, "LUT Directory", RELATIVE_PATH_TO_LUT_FILE_FOLDER).trim();
@@ -336,7 +369,7 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 //		}
 								
 		if (RELATIVE_PATH_TO_LUT_FILE_FOLDER.equals("")) {
-			RELATIVE_PATH_TO_LUT_FILE_FOLDER = IJ.getDirectory("luts") + "LutButtonPanel" + File.separator;
+			RELATIVE_PATH_TO_LUT_FILE_FOLDER = IJ_LUT_FOLDER + "LutButtonPanel" + File.separator;
 		} 
 		
 		if (!RELATIVE_PATH_TO_LUT_FILE_FOLDER.endsWith(File.separator)) {
@@ -345,7 +378,7 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		
 		if (!new File(RELATIVE_PATH_TO_LUT_FILE_FOLDER).isDirectory()) {
 			JOptionPane.showMessageDialog(null, "Path does not point to a folder", "Wrong Path", JOptionPane.ERROR_MESSAGE);
-			RELATIVE_PATH_TO_LUT_FILE_FOLDER = IJ.getDirectory("luts") + "LutButtonPanel" + File.separator;
+			RELATIVE_PATH_TO_LUT_FILE_FOLDER = IJ_LUT_FOLDER + "LutButtonPanel" + File.separator;
 		}
 		
 		System.out.println("RELATIVE_PATH_TO_LUT_FILE_FOLDER = " + RELATIVE_PATH_TO_LUT_FILE_FOLDER);
@@ -392,22 +425,26 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 	private static Vector<File> getFileList(String path, String fileEnding) {
 		
 		File folder = new File(path);
+//		System.out.println(folder.getAbsolutePath());
 		File[] fileList = folder.listFiles();
-
+//		System.out.println("fileList = " + fileList);
 		Vector<File> specificFileList = new Vector<File>();
 		
-		if (fileEnding != null) {
-			for (int f = 0; f < fileList.length; f++) {
-				
-				if (fileList[f].getAbsolutePath().endsWith(fileEnding)) {
+		if (fileList != null) {
+			if (fileEnding != null) {
+				for (int f = 0; f < fileList.length; f++) {
+					
+					if (fileList[f].getAbsolutePath().endsWith(fileEnding)) {
+						specificFileList.add(fileList[f]);
+					}
+				}			
+			} else {
+				for (int f = 0; f < fileList.length; f++) {
 					specificFileList.add(fileList[f]);
 				}
 			}			
-		} else {
-			for (int f = 0; f < fileList.length; f++) {
-				specificFileList.add(fileList[f]);
-			}
 		}
+		
 	
 		return specificFileList;
 	}
