@@ -183,13 +183,18 @@ public class SVG_Object_Factory {
 	
 	
 	
-	public static void saveImageAndOverlaysAsSVG(ImagePlus imp, File file, double interpolationInterval, boolean embedImage) {
+	public static void saveImageAndOverlaysAsSVG(ImagePlus imp, File file, double interpolationInterval, boolean embedImage, boolean lockCriticalObjects) {
 
 		ImagePlus inputImp = imp.crop("whole-slice");
-				
+		
 		ImageConverter ic = new ImageConverter(inputImp);
 		ImageConverter.setDoScaling(true);
-		ic.convertToRGB();
+		if (imp.isComposite()) {
+			ic.convertToRGB();
+		} else if (imp.getBitDepth() != 8 && imp.getBitDepth() != 24)  {
+			ic.convertToGray8();
+		}
+		
 				
 		SVG_Object_Factory svgDoc = new SVG_Object_Factory(inputImp);
 
@@ -214,7 +219,7 @@ public class SVG_Object_Factory {
 						
 			String roiName = roi.getName();
 			
-			if(roiName != null) {
+			if(roiName != null && lockCriticalObjects) {
 				if (roiName.equalsIgnoreCase("|SB|") || roiName.equalsIgnoreCase("|CB|") || roiName.equalsIgnoreCase("|INSET_FRAME|")) {
 					lockObject = true;
 				} else {
@@ -646,7 +651,7 @@ public class SVG_Object_Factory {
 		
 		ImagePlus testImp = IJ.openImage(System.getProperty("user.home") + "/Desktop/boats.tif");
 				
-		SVG_Object_Factory.saveImageAndOverlaysAsSVG(testImp, new File(testImp.getOriginalFileInfo().getFilePath()), 3.0, true);
+		SVG_Object_Factory.saveImageAndOverlaysAsSVG(testImp, new File(testImp.getOriginalFileInfo().getFilePath()), 3.0, true, false);
 	}
 	
 	

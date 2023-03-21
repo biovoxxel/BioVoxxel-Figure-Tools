@@ -31,6 +31,9 @@ public class BatchSvgExporter implements Command {
 		@Parameter(label = "Interpolate ROIs", min = "0.0", persist = true, description = "if 0.0 polygon ROIs will not be interpolated")
 		Double interpolationRange = 0.0;
 		
+		@Parameter(label = "Lock critical ROIs", description = "ROIs such as inset frames, calibration bars and scale bars will be locked in the SVG", persist = true)
+		Boolean lockSensitiveROIs = true;
+		
 		public void run() {
 		
 			int[] imageIDList = WindowManager.getIDList();
@@ -40,7 +43,7 @@ public class BatchSvgExporter implements Command {
 				ImagePlus imp = WindowManager.getImage(imageIDList[i]);
 				System.out.println(imp);
 									
-				SVG_Object_Factory.saveImageAndOverlaysAsSVG(imp, folder, interpolationRange, true);
+				SVG_Object_Factory.saveImageAndOverlaysAsSVG(imp, folder, interpolationRange, true, lockSensitiveROIs);
 				
 				if (!exportChannelsSeparately.equalsIgnoreCase("none")) {
 					LUT gray = SvgUtilities.getGrayLut();
@@ -56,7 +59,7 @@ public class BatchSvgExporter implements Command {
 							currentChannel.setOverlay(imp.getOverlay());					
 						}
 						System.out.println("fileName = " + fileName);
-						SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentChannel, folder, interpolationRange, true);
+						SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentChannel, folder, interpolationRange, true, lockSensitiveROIs);
 					}
 				}
 			}

@@ -37,6 +37,9 @@ public class TimeSeriesSvgExporter implements Command {
 	@Parameter(label = "Interpolate ROIs", min = "0.0", persist = true, description = "if 0.0 polygon ROIs will not be interpolated")
 	Double interpolationRange = 0.0;
 	
+	@Parameter(label = "Lock critical ROIs", description = "ROIs such as inset frames, calibration bars and scale bars will be locked in the SVG", persist = true)
+	Boolean lockSensitiveROIs = true;
+	
 	public void run() {
 			
 		subfolderPath = createSubfolder();
@@ -50,7 +53,7 @@ public class TimeSeriesSvgExporter implements Command {
 				imp.setT(slice);
 				ImagePlus currentSliceImp = imp.crop("whole-slice"); 
 				
-				SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentSliceImp, createSVGFile(slice), 0.0, true);
+				SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentSliceImp, createSVGFile(slice), 0.0, true, lockSensitiveROIs);
 				
 			}
 		}

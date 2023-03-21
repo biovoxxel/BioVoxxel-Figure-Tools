@@ -39,9 +39,12 @@ public class SVGExporter extends DynamicCommand {
 	@Parameter(label = "Interpolate ROIs", min = "0.0", persist = true, description = "if 0.0 polygon ROIs will not be interpolated")
 	Double interpolationRange = 0.0;
 	
+	@Parameter(label = "Lock critical ROIs", description = "ROIs such as inset frames, calibration bars and scale bars will be locked in the SVG", persist = true)
+	Boolean lockSensitiveROIs = true;
+	
 	public void run() {
 			
-		SVG_Object_Factory.saveImageAndOverlaysAsSVG(imp, createSVGFile(), interpolationRange, true);
+		SVG_Object_Factory.saveImageAndOverlaysAsSVG(imp, createSVGFile(), interpolationRange, true, lockSensitiveROIs);
 		
 		if (!exportChannelsSeparately.equalsIgnoreCase("none")) {
 			exportIndividualChannels();			
@@ -64,7 +67,7 @@ public class SVGExporter extends DynamicCommand {
 				currentChannel.setOverlay(imp.getOverlay());					
 			}
 			System.out.println("fileName = " + fileName);
-			SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentChannel, createSVGFile(), interpolationRange, true);
+			SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentChannel, createSVGFile(), interpolationRange, true, lockSensitiveROIs);
 		}
 	}	
 	
