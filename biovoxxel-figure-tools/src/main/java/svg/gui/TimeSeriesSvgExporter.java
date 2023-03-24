@@ -5,6 +5,7 @@ import java.io.File;
 import javax.swing.JOptionPane;
 
 import org.scijava.command.Command;
+import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -18,7 +19,7 @@ import svg.exporter.objects.SVG_Object_Factory;
  *
  */
 @Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Export time series as SVGs")
-public class TimeSeriesSvgExporter implements Command {
+public class TimeSeriesSvgExporter extends DynamicCommand {
 	
 	private String subfolderPath = "";
 	

@@ -4,6 +4,7 @@ package svg.gui;
 import java.io.File;
 
 import org.scijava.command.Command;
+import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -20,7 +21,7 @@ import svg.utilities.SvgUtilities;
  *
  */
 @Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Export all images as SVG")
-public class BatchSvgExporter implements Command {
+public class BatchSvgExporter extends DynamicCommand {
 	
 		@Parameter(label = "Target folder", required = true, style = "directory")
 		File folder;
