@@ -54,7 +54,7 @@ public class TimeSeriesSvgExporter extends DynamicCommand {
 				imp.setT(slice);
 				ImagePlus currentSliceImp = imp.crop("whole-slice"); 
 				
-				SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentSliceImp, createSVGFile(slice), 0.0, true, lockSensitiveROIs);
+				SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentSliceImp, createSVGFile(slice), interpolationRange, true, lockSensitiveROIs);
 				
 			}
 		}
