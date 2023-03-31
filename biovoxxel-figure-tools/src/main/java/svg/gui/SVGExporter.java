@@ -8,6 +8,7 @@ import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
+import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.process.LUT;
@@ -46,7 +47,7 @@ public class SVGExporter extends DynamicCommand {
 			
 		SVG_Object_Factory.saveImageAndOverlaysAsSVG(imp, createSVGFile(), interpolationRange, true, lockSensitiveROIs);
 		
-		if (!exportChannelsSeparately.equalsIgnoreCase("none")) {
+		if (!exportChannelsSeparately.equalsIgnoreCase("none") && imp.isComposite()) {
 			exportIndividualChannels();			
 		}
 		
@@ -56,18 +57,23 @@ public class SVGExporter extends DynamicCommand {
 		
 		LUT gray = SvgUtilities.getGrayLut();
 		
+		boolean[] activeChannels = ((CompositeImage)imp).getActiveChannels(); 
+		
 		for (int channel = 1; channel <= imp.getNChannels(); channel++) {
-			imp.setC(channel);
-			fileName = "C" + channel + "-" + imp.getTitle();
-			ImagePlus currentChannel = new ImagePlus(fileName, imp.getProcessor());
-			if (exportChannelsSeparately.contains("Grayscale")) {
-				currentChannel.setLut(gray);					
+			System.out.println("channel active = " + activeChannels[channel-1]);
+			if (activeChannels[channel-1]) {
+				imp.setC(channel);
+				fileName = "C" + channel + "-" + imp.getTitle();
+				ImagePlus currentChannel = new ImagePlus(fileName, imp.getProcessor());
+				if (exportChannelsSeparately.contains("Grayscale")) {
+					currentChannel.setLut(gray);
+				}
+				if (!exportChannelsSeparately.contains("(no overlays)")) {
+					currentChannel.setOverlay(imp.getOverlay());
+				}
+				System.out.println("fileName = " + fileName);
+				SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentChannel, createSVGFile(), interpolationRange, true, lockSensitiveROIs);
 			}
-			if (!exportChannelsSeparately.contains("(no overlays)")) {
-				currentChannel.setOverlay(imp.getOverlay());					
-			}
-			System.out.println("fileName = " + fileName);
-			SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentChannel, createSVGFile(), interpolationRange, true, lockSensitiveROIs);
 		}
 	}	
 	
@@ -79,6 +85,10 @@ public class SVGExporter extends DynamicCommand {
 		String folderPath = folder.getAbsolutePath();
 		if (!folderPath.endsWith(File.separator)) {
 			folderPath += File.separator;
+		}
+		
+		if (!fileName.endsWith(".svg")) {
+			fileName = fileName + ".svg";
 		}
 		
 		String finalFilePath = folderPath + fileName;
@@ -93,9 +103,9 @@ public class SVGExporter extends DynamicCommand {
 		String imageTitle = WindowManager.getCurrentImage().getTitle();
 		int fileExtensionSeparatorPosition = imageTitle.lastIndexOf(".");
 		if (fileExtensionSeparatorPosition != -1) {
-			fileName = imageTitle.substring(0, fileExtensionSeparatorPosition) + ".svg";
+			fileName = imageTitle.substring(0, fileExtensionSeparatorPosition);
 		} else {
-			fileName = imageTitle + ".svg";
+			fileName = imageTitle;
 		}
 		return fileName;
 	}

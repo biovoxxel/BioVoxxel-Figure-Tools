@@ -8,6 +8,7 @@ import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
+import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.process.LUT;
@@ -46,21 +47,25 @@ public class BatchSvgExporter extends DynamicCommand {
 									
 				SVG_Object_Factory.saveImageAndOverlaysAsSVG(imp, folder, interpolationRange, true, lockSensitiveROIs);
 				
-				if (!exportChannelsSeparately.equalsIgnoreCase("none")) {
+				if (!exportChannelsSeparately.equalsIgnoreCase("none") && imp.isComposite()) {
 					LUT gray = SvgUtilities.getGrayLut();
 					
+					boolean[] activeChannels = ((CompositeImage)imp).getActiveChannels(); 
+					
 					for (int channel = 1; channel <= imp.getNChannels(); channel++) {
-						imp.setC(channel);
-						String fileName = "C" + channel + "-" + imp.getTitle();
-						ImagePlus currentChannel = new ImagePlus(fileName, imp.getProcessor());
-						if (exportChannelsSeparately.contains("Grayscale")) {
-							currentChannel.setLut(gray);					
+						if (activeChannels[channel-1]) {
+							imp.setC(channel);
+							String fileName = "C" + channel + "-" + imp.getTitle();
+							ImagePlus currentChannel = new ImagePlus(fileName, imp.getProcessor());
+							if (exportChannelsSeparately.contains("Grayscale")) {
+								currentChannel.setLut(gray);
+							}
+							if (!exportChannelsSeparately.contains("(no overlays)")) {
+								currentChannel.setOverlay(imp.getOverlay());
+							}
+							System.out.println("fileName = " + fileName);
+							SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentChannel, folder, interpolationRange, true, lockSensitiveROIs);
 						}
-						if (!exportChannelsSeparately.contains("(no overlays)")) {
-							currentChannel.setOverlay(imp.getOverlay());					
-						}
-						System.out.println("fileName = " + fileName);
-						SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentChannel, folder, interpolationRange, true, lockSensitiveROIs);
 					}
 				}
 			}
