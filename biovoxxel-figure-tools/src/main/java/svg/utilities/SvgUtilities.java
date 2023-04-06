@@ -69,7 +69,13 @@ public class SvgUtilities {
 		String filePath = null;
 		
 		if (file.isDirectory()) {
-			filePath = file.getPath() + File.separator + imp.getShortTitle() + ".svg";
+			
+			String originalImageTitle = imp.getTitle();
+			if (originalImageTitle.lastIndexOf(".") != -1) {
+				originalImageTitle = originalImageTitle.substring(0, originalImageTitle.lastIndexOf("."));
+			}
+			
+			filePath = file.getPath() + File.separator + originalImageTitle + ".svg";
 		} else {
 			
 			filePath = file.getAbsolutePath();
