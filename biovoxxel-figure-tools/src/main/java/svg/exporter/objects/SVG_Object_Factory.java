@@ -380,6 +380,7 @@ public class SVG_Object_Factory {
 		} else {
 			shapeObject.setAttributeNS(null, SVGSyntax.SVG_FILL_ATTRIBUTE, "none");
 		}
+				
 	}
 	
 	

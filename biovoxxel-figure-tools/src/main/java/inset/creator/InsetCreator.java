@@ -11,6 +11,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -53,6 +54,7 @@ public class InsetCreator extends JFrame {
 	public static int IMAGE_WIDTH;
 	public static int IMAGE_HEIGHT;
 	private static JComboBox<String> comboBoxPreserve;
+	private JCheckBox chckbxAddFrameToInset;
 
 	
 
@@ -125,7 +127,7 @@ public class InsetCreator extends JFrame {
 				
 			}
 		});
-		comboBoxPreserve.setModel(new DefaultComboBoxModel<String>(new String[] {"Image size", "Square height", "Square width"}));
+		comboBoxPreserve.setModel(new DefaultComboBoxModel(new String[] {"Image ratio", "Square height", "Square width", "Circle"}));
 		comboBoxPreserve.setSelectedIndex(0);
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.insets = new Insets(0, 0, 5, 0);
@@ -133,6 +135,14 @@ public class InsetCreator extends JFrame {
 		gbc_comboBox.gridx = 1;
 		gbc_comboBox.gridy = 1;
 		contentPane.add(comboBoxPreserve, gbc_comboBox);
+		
+		chckbxAddFrameToInset = new JCheckBox("Frame on Inset");
+		chckbxAddFrameToInset.setSelected(true);
+		GridBagConstraints gbc_chckbxAddFrameToInset = new GridBagConstraints();
+		gbc_chckbxAddFrameToInset.insets = new Insets(0, 0, 5, 0);
+		gbc_chckbxAddFrameToInset.gridx = 1;
+		gbc_chckbxAddFrameToInset.gridy = 2;
+		contentPane.add(chckbxAddFrameToInset, gbc_chckbxAddFrameToInset);
 				
 		
 		spinnerInsetFrameWidth = new JSpinner();
