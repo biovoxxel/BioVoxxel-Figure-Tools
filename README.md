@@ -13,17 +13,29 @@ The *BioVoxxel Figure Tools* come with a convenience menu which can be retreived
 
 ## Functions
 
+### LUT Channels Tool
+This tool is the equivalent of the normal ImageJ channels tool and based on its functionalities. Advantage is that multiple LUT collections can be gathered in one folder and switched between
+Therefore, create a new sub-folder in the `Fiji.app > luts` folder and add .lut files you like in that folder. After restarting the LUT Channels Tool a right-click in the panel area around the buttons enables you to set the lut folder used to create the buttons panel. Click any button to apply a certain LUT to the current image or active channel of a composite image.
+Channels can be further shown or hidden using the channel checkboxes.
+`Split Channels` calls the IJ split channels command. The same is true for `Merge Channels`.
+`CDV Test` usis IJ's function to simulate the most common color-deficient vision issues to check if the currently used LUT is useful for scientific publications.
+
+![image](https://user-images.githubusercontent.com/10721817/233982982-08f0cde1-5600-4aa1-9a1a-c39eab770a61.png)
+
+### Creating zoomed-in and resized versions of image areas (e.g. as insets)
+Simple zoomed-in inset images can be created at fixed size changes to avoid pixel artifacts by using the funtion `Create framed inset zoom`
+
+![image](https://user-images.githubusercontent.com/10721817/233987280-09ae7012-7073-4a5f-8fe6-88dd673d7bc9.png)
+
+
+
 ### Exporting SVG vector graphics directly from Fiji
 
 ![image](https://user-images.githubusercontent.com/10721817/213475119-ac5dd2dc-e214-45d9-9499-ecc0df0311ca.png)
 
 The functions allow exporting images together with all added overlays (ROIs from a Roi Manager, scale bars, calibration bars, arrows, etc.) in one step into an SVG vector graphics file. It supports multichannel composite images and ImageJ hyperstacks (so no need to flatten to an RGB). In composite images only visible channels will be exported enabling the user to export different versions of channel merges in an easy manner. 
 Even more convenient, you can export all open images at once as individual SVG files and import them easily in [Inkscape](https://inkscape.org/) (unfortunately Adobe Illustrator (TM) seems to currently not support this saved SVG file type).
-Simple zoomed-in inset images can be created at fixed size changes to avoid pixel artifacts 
 
-### Aligned SVGs in Inkscape after export from ImageJ
-
-![image](https://user-images.githubusercontent.com/10721817/213476261-4ce8f48c-4725-4e45-b689-6da70fa47d82.png)
 
 ### Exporting time points of time series (also from Hyperstacks)
 
@@ -37,6 +49,11 @@ Image source: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6139958.svg)](
 Those can then be imported in [Inkscape](https://inkscape.org/) and easily arranged with a grid alignment functionalitiy
 
 ![image](https://user-images.githubusercontent.com/10721817/220352194-e96a0b8b-26ef-4916-b48d-f73b0bee6e68.png)
+
+### Aligned SVGs in Inkscape after export from ImageJ
+
+![image](https://user-images.githubusercontent.com/10721817/213476261-4ce8f48c-4725-4e45-b689-6da70fa47d82.png)
+
 
 ### Metadate Recording with *Meta-D-Rex*
 
