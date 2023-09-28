@@ -206,6 +206,8 @@ public class SVG_Object_Factory {
 		svgRoot.appendChild(group);
 		
 		Element image = svgDoc.createImage(inputImp, embedImage);
+		image.setAttributeNS(inkscapeNS, "inkscape:label", inputImp.getTitle());
+		
 		group.appendChild(image);
 		System.out.println("Added to document: " + image);
 		
@@ -311,11 +313,20 @@ public class SVG_Object_Factory {
 		
 		
 		if (description != null || description !="") {
+			
 			Element objectDescription = doc.createElementNS(svgNS, SVGSyntax.SVG_DESC_TAG);
 			objectDescription.setTextContent(description);
 			
 			shapeObject.appendChild(objectDescription);
 		}
+		
+		
+		if (roi.getName() != null && !roi.getName().equals("")) {
+			
+			shapeObject.setAttributeNS(inkscapeNS, "inkscape:label", roi.getName());
+			
+		}
+		
 		
 		if (lock) {
 			
@@ -477,6 +488,8 @@ public class SVG_Object_Factory {
 			} else {
 				path.setAttributeNS(svgNS, SVGSyntax.SVG_STYLE_ATTRIBUTE, SVGSyntax.CSS_MARKER_END_PROPERTY + ":url(#Arrow2)");
 			}
+			
+			path.setAttributeNS(inkscapeNS, "inkscape:label", "Arrow");
 		}
 		
 		return path;
