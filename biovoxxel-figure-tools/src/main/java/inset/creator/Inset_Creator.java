@@ -7,6 +7,7 @@ import org.scijava.command.DynamicCommand;
 import org.scijava.command.Interactive;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.prefs.PrefService;
 import org.scijava.util.ColorRGB;
 import org.scijava.widget.Button;
 
@@ -20,11 +21,13 @@ import ij.plugin.frame.Recorder;
 @Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Create framed inset zoom")
 public class Inset_Creator extends DynamicCommand implements Interactive {
 	
+	@Parameter
+	private PrefService prefs;
 	
 	@Parameter
 	public static ImagePlus inputImage;
 	
-	@Parameter (label = "Fold magnification", min = "2", stepSize = "1", initializer = "magnificationChanged", callback = "magnificationChanged", persist = true)
+	@Parameter (label = "Fold magnification", min = "2", stepSize = "1", callback = "magnificationChanged")
 	public static Integer magnification = 2;
 	
 	@Parameter (label = "Aspect ratio", choices = {"Image", "Square_height", "Square_width", "Circle_height", "Circle_width"}, callback = "magnificationChanged")
@@ -33,13 +36,13 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 	@Parameter (label = "Add frame to original")
 	public static Boolean addFrame = true;
 	
-	@Parameter (label = "Add Frame to inset")
+	@Parameter (label = "Add frame to inset")
 	public static Boolean addFrameToInset = true;
 	
 	@Parameter (label = "Frame width (px)", min = "1")
 	public static Integer frameWidth = 3;
 	
-	@Parameter (label = "Frame color", persist = true)
+	@Parameter (label = "Frame color")
 	public static ColorRGB frameColor = new ColorRGB(255, 255, 255);
 	
 	@Parameter (label = "Create", callback = "createInset")
@@ -50,6 +53,9 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 		
 	@SuppressWarnings("unused")
 	private void createInset() {
+		
+		setPreferences();
+			
 		
 		Roi roi = inputImage.getRoi();
 		
@@ -89,6 +95,16 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 			}
 		}
 	}
+
+
+	private void setPreferences() {
+		prefs.put(getClass(), "magnification", magnification);
+		prefs.put(getClass(), "aspectRatio", aspectRatio);
+		prefs.put(getClass(), "addFrame", addFrame);
+		prefs.put(getClass(), "addFrameToInset", addFrameToInset);
+		prefs.put(getClass(), "frameWidth", frameWidth);
+		prefs.put(getClass(), "frameColor", frameColor.toString());
+	}
 	
 	
 	@SuppressWarnings("unused")
@@ -105,7 +121,6 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 			System.out.println("recording set = " + Recorder.record);
 			
 		}
-		System.out.println("executing run method");
 	
 		String macroParams = Macro.getOptions();
 		System.out.println("Macro parameters = " + macroParams);
