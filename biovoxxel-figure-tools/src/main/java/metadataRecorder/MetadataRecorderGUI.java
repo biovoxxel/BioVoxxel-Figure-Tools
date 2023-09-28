@@ -77,7 +77,7 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 	private JTextArea textArea;
 	private UndoManager undomanager = new UndoManager();
 	private ImagePlus imagePlus = null;
-	private String EXCLUDED_FROM_RECORDING[] = {"Record", "selectWindow", "Show Info"};
+	private String EXCLUDED_FROM_RECORDING[] = {"Record", "Show Info", "Close", "Console"};
 	
 	private static long PREVIOUS_EVENT_TRIGGER_TIME = 0;
 	private Recorder ijRecorder = null;
@@ -107,7 +107,7 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 						//System.out.println("Last command = " + lastRecordedLine);
 						//System.out.println("lastRecordedLine.matches(\"selectWindow.*\") = " + lastRecordedLine.matches("selectWindow.*"));
 						
-						if (lastRecordedLine.matches("selectWindow.*")) {
+						if (lastRecordedLine.matches("selectWindow.*") || lastRecordedLine.matches("selectImage.*")) {
 							
 							imagePlus = WindowManager.getCurrentImage();
 							//System.out.println("Active image = " + imagePlus);
@@ -115,7 +115,7 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 							readMetadataFromImage();
 						}
 						
-						if (ijRecorder != null && imagePlus != null && !lastRecordedLine.matches("selectWindow.*")) {
+						if (ijRecorder != null && imagePlus != null && !lastRecordedLine.matches("selectWindow.*") && !lastRecordedLine.matches("selectImage.*")) {
 													
 							textArea.append(lastRecordedLine + System.lineSeparator());
 							saveMetadataToImage();
