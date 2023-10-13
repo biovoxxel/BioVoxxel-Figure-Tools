@@ -78,6 +78,7 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 	private UndoManager undomanager = new UndoManager();
 	private ImagePlus imagePlus = null;
 	private String EXCLUDED_FROM_RECORDING[] = {"Record", "Show Info", "Close", "Console"};
+	private String PREVIOUS_RECORDED_STRING = "";
 	
 	private static long PREVIOUS_EVENT_TRIGGER_TIME = 0;
 	private Recorder ijRecorder = null;
@@ -100,14 +101,16 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 				
 				if (commandOptions.length > 0) {
 				
-					lastRecordedLine = commandOptions[commandOptions.length-1];
+					lastRecordedLine = recorderText.replace(PREVIOUS_RECORDED_STRING, "");
+					System.out.println(lastRecordedLine);
+					//lastRecordedLine = commandOptions[commandOptions.length-1];
 					
 					if (!isExcluded(lastRecordedLine)) {
 						
 						//System.out.println("Last command = " + lastRecordedLine);
 						//System.out.println("lastRecordedLine.matches(\"selectWindow.*\") = " + lastRecordedLine.matches("selectWindow.*"));
 						
-						if (lastRecordedLine.matches("selectWindow.*") || lastRecordedLine.matches("selectImage.*")) {
+						if (lastRecordedLine.trim().matches(".*selectWindow.*") || lastRecordedLine.trim().matches(".*selectImage.*")) {
 							
 							imagePlus = WindowManager.getCurrentImage();
 							//System.out.println("Active image = " + imagePlus);
@@ -115,9 +118,9 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 							readMetadataFromImage();
 						}
 						
-						if (ijRecorder != null && imagePlus != null && !lastRecordedLine.matches("selectWindow.*") && !lastRecordedLine.matches("selectImage.*")) {
+						if (ijRecorder != null && imagePlus != null && !lastRecordedLine.trim().matches(".*selectWindow.*") && !lastRecordedLine.trim().matches(".*selectImage.*")) {
 													
-							textArea.append(lastRecordedLine + System.lineSeparator());
+							textArea.append(lastRecordedLine);
 							saveMetadataToImage();
 							
 							imagePlus = WindowManager.getCurrentImage();
@@ -135,6 +138,7 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 				}
 				
 				PREVIOUS_EVENT_TRIGGER_TIME = currentTime;
+				PREVIOUS_RECORDED_STRING = recorderText;
 				//System.out.println("Execution time = " + currentTime);
 			}
 		}	
@@ -188,12 +192,12 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
 		contentPane.setLayout(gbl_contentPane);
 		
-		JToggleButton tglbtnToggleRecording = new JToggleButton("<html><b>Pause recording");
+		JToggleButton tglbtnToggleRecording = new JToggleButton("<html><b>Pause Recording");
 		tglbtnToggleRecording.setForeground(Color.BLACK);
 		tglbtnToggleRecording.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				if (tglbtnToggleRecording.isSelected()) {
-					tglbtnToggleRecording.setText("<html><i>Continue Recording");
+					tglbtnToggleRecording.setText("<html><b>Continue Recording");
 					tglbtnToggleRecording.setForeground(Color.RED);
 					Recorder.record = false;
 					
@@ -214,7 +218,7 @@ public class MetadataRecorderGUI extends JFrame implements UndoableEditListener,
 		gbc_lblImageTitle.gridy = 0;
 		contentPane.add(lblImageTitle, gbc_lblImageTitle);
 		GridBagConstraints gbc_tglbtnToggleRecording = new GridBagConstraints();
-		gbc_tglbtnToggleRecording.anchor = GridBagConstraints.WEST;
+		gbc_tglbtnToggleRecording.fill = GridBagConstraints.HORIZONTAL;
 		gbc_tglbtnToggleRecording.insets = new Insets(0, 0, 5, 5);
 		gbc_tglbtnToggleRecording.gridx = 0;
 		gbc_tglbtnToggleRecording.gridy = 1;
