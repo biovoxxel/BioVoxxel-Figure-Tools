@@ -22,16 +22,31 @@ Channels can be further shown or hidden using the channel checkboxes.
 
 ![image](https://user-images.githubusercontent.com/10721817/233982982-08f0cde1-5600-4aa1-9a1a-c39eab770a61.png)
 
+### 5D Contrast Optimizer
+This tool will check all channels, z-slices and time frames for all open or provided images and adjust the contrast equally to all images avoiding strong oversaturation. And all of that with basically just one click. CAUTION: All images that should be compared to each other in a figure need to be adjusted here at the same time.
+
+![image](https://github.com/biovoxxel/BioVoxxel-Figure-Tools/assets/10721817/bca3ab15-6766-4645-a981-b37250ade297)
+
+Comparing images before and after adjustment:
+![image](https://github.com/biovoxxel/BioVoxxel-Figure-Tools/assets/10721817/a9735ba6-4df3-40bd-871f-78b8e8c68a61)
+
+###RGB Contrast Optimizer
+This is the same as the 5D Contrast Optimizer but for RGB true-color images (such as bright-field, histological sections,...)
+
+![image](https://github.com/biovoxxel/BioVoxxel-Figure-Tools/assets/10721817/19c2ec4d-255f-459e-ab32-f94ce3e16b8c)
+
+Comparing images before and after adjustment:
+![image](https://github.com/biovoxxel/BioVoxxel-Figure-Tools/assets/10721817/1bace310-69b0-4016-94e4-e68046197e18)
+
+
 ### Creating zoomed-in and resized versions of image areas (e.g. as insets)
-Simple zoomed-in inset images can be created at fixed size changes to avoid pixel artifacts by using the funtion `Create framed inset zoom`
+Simple zoomed-in inset images can be created at fixed integer size factors to avoid pixel artifacts by using the funtion `Create framed inset zoom`
 
-![image](https://user-images.githubusercontent.com/10721817/233987280-09ae7012-7073-4a5f-8fe6-88dd673d7bc9.png)
-
-
+![image](https://github.com/biovoxxel/BioVoxxel-Figure-Tools/assets/10721817/ef6761a6-f91f-4a88-9a84-be41ab37fec6)
 
 ### Exporting SVG vector graphics directly from Fiji
 
-![image](https://user-images.githubusercontent.com/10721817/213475119-ac5dd2dc-e214-45d9-9499-ecc0df0311ca.png)
+![image](https://github.com/biovoxxel/BioVoxxel-Figure-Tools/assets/10721817/3b910b28-d3df-418f-b22b-f18f782381e0)
 
 The functions allow exporting images together with all added overlays (ROIs from a Roi Manager, scale bars, calibration bars, arrows, etc.) in one step into an SVG vector graphics file. It supports multichannel composite images and ImageJ hyperstacks (so no need to flatten to an RGB). In composite images only visible channels will be exported enabling the user to export different versions of channel merges in an easy manner. 
 Even more convenient, you can export all open images at once as individual SVG files and import them easily in [Inkscape](https://inkscape.org/) (unfortunately Adobe Illustrator (TM) seems to currently not support this saved SVG file type).
