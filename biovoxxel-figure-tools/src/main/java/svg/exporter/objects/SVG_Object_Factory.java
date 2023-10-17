@@ -204,6 +204,8 @@ public class SVG_Object_Factory {
 				
 		Element group = doc.createElementNS(svgNS, SVGSyntax.SVG_G_TAG);
 		svgRoot.appendChild(group);
+		group.setAttributeNS(inkscapeNS, "inkscape:label", "group_" + inputImp.getTitle());
+		
 		
 		Element image = svgDoc.createImage(inputImp, embedImage);
 		image.setAttributeNS(inkscapeNS, "inkscape:label", inputImp.getTitle());

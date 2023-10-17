@@ -37,6 +37,9 @@ public class SVGExporter extends DynamicCommand {
 	@Parameter(label = "Export channels", choices = {"None", "Color", "Grayscale", "Color (no overlays)", "Grayscale (no overlays)"})
 	String exportChannelsSeparately = "None";
 	
+	@Parameter(label = "Export also non-visible channels")
+	Boolean exportAlsoNonVisibleChannels = false;
+	
 	@Parameter(label = "Interpolate ROIs", min = "0.0", persist = true, description = "if 0.0 polygon ROIs will not be interpolated")
 	Double interpolationRange = 0.0;
 	
@@ -61,7 +64,7 @@ public class SVGExporter extends DynamicCommand {
 		
 		for (int channel = 1; channel <= imp.getNChannels(); channel++) {
 			System.out.println("channel active = " + activeChannels[channel-1]);
-			if (activeChannels[channel-1]) {
+			if (activeChannels[channel-1] || exportAlsoNonVisibleChannels) {
 				imp.setC(channel);
 				fileName = "C" + channel + "-" + imp.getTitle();
 				ImagePlus currentChannel = new ImagePlus(fileName, imp.getProcessor());
