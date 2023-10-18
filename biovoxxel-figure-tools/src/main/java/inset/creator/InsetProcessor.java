@@ -59,20 +59,21 @@ public class InsetProcessor {
 			if (frameRoi instanceof OvalRoi) {
 				
 				ovalRoi = new OvalRoi(1, 1, scaledImagePlus.getWidth()-(frameWidth+1), scaledImagePlus.getHeight()-(frameWidth+1));
-				
-				for (int c = 1; c <= scaledImagePlus.getNChannels(); c++) {
-					scaledImagePlus.setC(c);
-					for (int z = 1; z <= scaledImagePlus.getNSlices(); z++) {
-						scaledImagePlus.setZ(z);
-						for (int f = 1; f <= scaledImagePlus.getNFrames(); f++) {
-							scaledImagePlus.setT(f);
-							ImageProcessor scaledImageProcessor = scaledImagePlus.getProcessor();
-							scaledImageProcessor.setColor(Color.BLACK);
-							scaledImagePlus.getProcessor().fillOutside(ovalRoi);
-						}
-					}
-				}
-				
+
+//obsolete after version 2.2.0 (just kept for this one version for security)
+//
+//				for (int c = 1; c <= scaledImagePlus.getNChannels(); c++) {
+//					scaledImagePlus.setC(c);
+//					for (int z = 1; z <= scaledImagePlus.getNSlices(); z++) {
+//						scaledImagePlus.setZ(z);
+//						for (int f = 1; f <= scaledImagePlus.getNFrames(); f++) {
+//							scaledImagePlus.setT(f);
+//							ImageProcessor scaledImageProcessor = scaledImagePlus.getProcessor();
+//							scaledImageProcessor.setColor(Color.BLACK);
+//							scaledImagePlus.getProcessor().fillOutside(ovalRoi);
+//						}
+//					}
+//				}
 			}
 			
 			if (Inset_Creator.addFrameToInset) {
@@ -85,6 +86,7 @@ public class InsetProcessor {
 				}
 				insetRoi.setStrokeWidth(Inset_Creator.frameWidth);
 				insetRoi.setStrokeColor(frameColor);
+				insetRoi.setName("|INSET_FRAME|");
 				
 				Overlay insetOverlay = scaledImagePlus.getOverlay();
 				if (insetOverlay == null) {
@@ -93,8 +95,9 @@ public class InsetProcessor {
 				}
 				insetOverlay.add(insetRoi);
 				if (frameRoi instanceof OvalRoi) {
-					insetRoi.setName("CLIP_ROI");
-					insetOverlay.add(insetRoi);	//add twice to have a clipping Roi in Inkscape available
+					Roi clippingRoi = (Roi)insetRoi.clone();
+					clippingRoi.setName("|CLIP_ROI|");
+					insetOverlay.add(clippingRoi);	//add twice to have a clipping Roi in Inkscape available
 				}
 				
 				scaledImagePlus.killRoi();

@@ -234,8 +234,17 @@ public class SVG_Object_Factory {
 			}
 			
 			Element object = svgDoc.createObject(roi, roiName, lockObject);
+
+			if (roiName != null && roiName.equalsIgnoreCase("|CLIP_ROI|")) {
+				String clipPathId = addClipPathToDocument(object);
+				System.out.println("clipPathId = " + clipPathId);
+				image.setAttributeNS(svgNS, SVGSyntax.SVG_CLIP_PATH_ATTRIBUTE, "url(#" + clipPathId + ")");
+				
+			} else {
+				System.out.println("appending " + object + System.lineSeparator());
+				group.appendChild(object);
+			}
 			
-			group.appendChild(object);
 			System.out.println("Added to document: " + object);
 		}
 	
@@ -243,6 +252,22 @@ public class SVG_Object_Factory {
 	}
 	
 	
+	public static String addClipPathToDocument(Element clipObject) {
+		System.out.println("adding clipping path" + System.lineSeparator());
+		Element clipDef = doc.createElementNS(svgNS, SVGSyntax.SVG_DEFS_TAG);
+		svgRoot.appendChild(clipDef);
+		
+		Element clipPath = doc.createElementNS(svgNS, SVGSyntax.SVG_CLIP_PATH_TAG);
+		clipPath.setAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE, "clipPath" + Math.round(Math.random()*1000));
+		
+		clipDef.appendChild(clipPath);
+		
+		clipPath.appendChild(clipObject);
+		
+		return clipPath.getAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE); //clipPath.getAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE);	
+	}
+
+
 	public Element createImage(ImagePlus imp, boolean embed) {
 		
 		Element image = doc.createElementNS(svgNS, SVGSyntax.SVG_IMAGE_TAG);
@@ -334,6 +359,7 @@ public class SVG_Object_Factory {
 			
 			shapeObject.setAttributeNS(sodipodiNS, "sodipodi:insensitive", "true");
 		}
+		
 		
 		System.out.println(shapeObject + " created from " + roi);
 		
