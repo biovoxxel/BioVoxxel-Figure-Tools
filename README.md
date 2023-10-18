@@ -30,7 +30,7 @@ This tool will check all channels, z-slices and time frames for all open or prov
 Comparing images before and after adjustment:
 ![image](https://github.com/biovoxxel/BioVoxxel-Figure-Tools/assets/10721817/a9735ba6-4df3-40bd-871f-78b8e8c68a61)
 
-###RGB Contrast Optimizer
+### RGB Contrast Optimizer
 This is the same as the 5D Contrast Optimizer but for RGB true-color images (such as bright-field, histological sections,...)
 
 ![image](https://github.com/biovoxxel/BioVoxxel-Figure-Tools/assets/10721817/19c2ec4d-255f-459e-ab32-f94ce3e16b8c)
