@@ -34,6 +34,9 @@ public class SVGExporter extends DynamicCommand {
 	@Parameter(label = "Target folder", required = true, style = "directory")
 	File folder;
 
+	@Parameter(label = "Keep multichannel composite", required = true, description = "keeps channels accessible in Inkscape but increases file size")
+	Boolean keepComposite = false;
+	
 	@Parameter(label = "Export channels", choices = {"None", "Color", "Grayscale", "Color (no overlays)", "Grayscale (no overlays)"})
 	String exportChannelsSeparately = "None";
 	
@@ -48,7 +51,7 @@ public class SVGExporter extends DynamicCommand {
 	
 	public void run() {
 			
-		SVG_Object_Factory.saveImageAndOverlaysAsSVG(imp, createSVGFile(), interpolationRange, true, lockSensitiveROIs);
+		SVG_Object_Factory.saveImageAndOverlaysAsSVG(imp, createSVGFile(), interpolationRange, keepComposite, true, lockSensitiveROIs);
 		
 		if (!exportChannelsSeparately.equalsIgnoreCase("none") && imp.isComposite()) {
 			exportIndividualChannels();			
@@ -67,7 +70,7 @@ public class SVGExporter extends DynamicCommand {
 			if (activeChannels[channel-1] || exportAlsoNonVisibleChannels) {
 				imp.setC(channel);
 				fileName = "C" + channel + "-" + imp.getTitle();
-				ImagePlus currentChannel = new ImagePlus(fileName, imp.getProcessor());
+				ImagePlus currentChannel = new ImagePlus(fileName, imp.getProcessor().duplicate());
 				if (exportChannelsSeparately.contains("Grayscale")) {
 					currentChannel.setLut(gray);
 				}
@@ -75,7 +78,7 @@ public class SVGExporter extends DynamicCommand {
 					currentChannel.setOverlay(imp.getOverlay());
 				}
 				System.out.println("fileName = " + fileName);
-				SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentChannel, createSVGFile(), interpolationRange, true, lockSensitiveROIs);
+				SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentChannel, createSVGFile(), interpolationRange, false, true, lockSensitiveROIs);
 			}
 		}
 	}	

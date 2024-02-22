@@ -51,8 +51,8 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 	private static final long serialVersionUID = -8417843918812937098L;
 	private JPanel contentPane;
 	private JComboBox<String> comboBox;
-	private static String IJ_LUT_FOLDER = IJ.getDirectory("luts") + File.separator;
-    private static String RELATIVE_PATH_TO_LUT_FILE_FOLDER = Prefs.get("biovoxxel.lut.button.panel.lut.folder", IJ_LUT_FOLDER);
+	private static String IJ_LUT_FOLDER = IJ.getDirectory("luts");
+    private static String RELATIVE_PATH_TO_LUT_FILE_FOLDER = Prefs.get("biovoxxel.lut.button.panel.lut.folder", "");
     private JButton btnCDV;
    	
 	
@@ -306,6 +306,7 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		ImagePlus lutButtonIcon = IJ.createImage("", "8-bit ramp", 64, 20, 1);
 		
 //		System.out.println(RELATIVE_PATH_TO_LUT_FILE_FOLDER);
+		RELATIVE_PATH_TO_LUT_FILE_FOLDER = Prefs.get("biovoxxel.lut.button.panel.lut.folder", IJ_LUT_FOLDER + "LutButtonPanel" + File.separator);
 		Vector<File> lutFiles = getFileList(RELATIVE_PATH_TO_LUT_FILE_FOLDER, ".lut");
 		
 		if (lutFiles == null || lutFiles.size() == 0) {

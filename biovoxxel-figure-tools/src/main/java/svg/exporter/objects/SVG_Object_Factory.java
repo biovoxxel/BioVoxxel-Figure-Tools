@@ -29,6 +29,7 @@ import ij.gui.ShapeRoi;
 import ij.gui.TextRoi;
 import ij.plugin.ImageInfo;
 import ij.process.ImageConverter;
+import ij.CompositeImage;
 import svg.exporter.converter.ImageStringConverter;
 import svg.utilities.SvgUtilities;
 
@@ -183,16 +184,23 @@ public class SVG_Object_Factory {
 	
 	
 	
-	public static void saveImageAndOverlaysAsSVG(ImagePlus imp, File file, double interpolationInterval, boolean embedImage, boolean lockCriticalObjects) {
+	public static void saveImageAndOverlaysAsSVG(ImagePlus imp, File file, double interpolationInterval, boolean keepComposite, boolean embedImage, boolean lockCriticalObjects) {
 
 		ImagePlus inputImp = imp.crop("whole-slice");
+		inputImp.setTitle(imp.getTitle());
 		
 		ImageConverter ic = new ImageConverter(inputImp);
 		ImageConverter.setDoScaling(true);
-		if (imp.isComposite()) {
-			ic.convertToRGB();
-		} else if (imp.getBitDepth() != 8 && imp.getBitDepth() != 24)  {
+		if (imp.isComposite() && !keepComposite) {
+			
+			System.out.println("Converting image to RGB");
+			ic.convertToRGB();				
+			
+		} else if (imp.getBitDepth() != 8 && imp.getBitDepth() != 24 && !keepComposite)  {
+			System.out.println("Converting image to 8-bit grayscale");
 			ic.convertToGray8();
+		} else {
+			System.out.println("Keep composite");
 		}
 		
 				
@@ -206,9 +214,14 @@ public class SVG_Object_Factory {
 		svgRoot.appendChild(group);
 		group.setAttributeNS(inkscapeNS, "inkscape:label", "group_" + inputImp.getTitle());
 		
-		
-		Element image = svgDoc.createImage(inputImp, embedImage);
-		image.setAttributeNS(inkscapeNS, "inkscape:label", inputImp.getTitle());
+		Element image;
+		if (imp.isComposite() && keepComposite) {
+			image = svgDoc.createComposite(inputImp, embedImage);
+			image.setAttributeNS(inkscapeNS, "inkscape:label", "composite_" + inputImp.getTitle());
+		} else {
+			image = svgDoc.createImage(inputImp, embedImage);
+			image.setAttributeNS(inkscapeNS, "inkscape:label", inputImp.getTitle());			
+		}
 		
 		group.appendChild(image);
 		System.out.println("Added to document: " + image);
@@ -267,8 +280,15 @@ public class SVG_Object_Factory {
 		return clipPath.getAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE); //clipPath.getAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE);	
 	}
 
-
+	/**
+	 * 
+	 * @param imp
+	 * @param embed
+	 * @return
+	 */
 	public Element createImage(ImagePlus imp, boolean embed) {
+		
+		System.out.println("Creating RGB SVG");
 		
 		Element image = doc.createElementNS(svgNS, SVGSyntax.SVG_IMAGE_TAG);
 		
@@ -294,6 +314,68 @@ public class SVG_Object_Factory {
 		
 		return image;
 	}
+	
+	
+	public Element createComposite(ImagePlus composite, boolean embed) {
+
+		System.out.println("Creating composite SVG");
+		
+		Element compositeGroup = doc.createElementNS(svgNS, SVGSyntax.SVG_G_TAG);
+		
+		System.out.println("Composite channels = " + composite.getNChannels());
+		
+		boolean[] activeChannels = ((CompositeImage)composite).getActiveChannels();
+		
+		for (int channel = composite.getNChannels(); channel >= 1; channel--) {
+			
+			composite.setC(channel);
+			String fileName = "C" + channel + "-" + composite.getTitle();
+			System.out.println("Processing composite channel " + fileName);
+			ImagePlus currentChannel = new ImagePlus(fileName, composite.getProcessor().duplicate());
+						
+			ImageConverter ic = new ImageConverter(currentChannel);
+			ImageConverter.setDoScaling(true);
+			ic.convertToRGB();			
+			
+			Element image = doc.createElementNS(svgNS, SVGSyntax.SVG_IMAGE_TAG);
+			
+			image.setAttributeNS(inkscapeNS, "inkscape:label", fileName);
+			image.setAttributeNS(svgNS, "x", "0");
+			image.setAttributeNS(svgNS, "y", "0");
+			image.setAttributeNS(svgNS, "width", "" + currentChannel.getWidth());
+			image.setAttributeNS(svgNS, "height", "" + currentChannel.getHeight());
+			image.setAttributeNS(svgNS, SVGSyntax.SVG_IMAGE_RENDERING_ATTRIBUTE, "pixelated");
+			
+			String styleAttribute = "display:";
+			if (activeChannels[channel-1]) {
+				styleAttribute += "inline;";
+			} else {
+				styleAttribute += "none;";
+			}
+			
+			image.setAttributeNS(svgNS, SVGSyntax.SVG_STYLE_ATTRIBUTE, styleAttribute + "mix-blend-mode:screen;");
+			
+			Element objectDescription = doc.createElementNS(svgNS, SVGSyntax.SVG_DESC_TAG);
+			objectDescription.setTextContent(new ImageInfo().getImageInfo(composite));
+			image.appendChild(objectDescription);
+			
+			if (embed) {
+				
+				String embedCode = new ImageStringConverter().getBase64StringFromImagePlus(currentChannel);
+				image.setAttributeNS(svgNS, SVGSyntax.XLINK_HREF_QNAME, "data:image/png;base64," + embedCode);
+			} else {
+				
+				//images linked need to be located in the same folder as the actual SVG file to make the linking work
+				image.setAttributeNS(svgNS, SVGSyntax.XLINK_HREF_QNAME, currentChannel.getTitle());
+			}
+			
+			compositeGroup.appendChild(image);
+		}
+		
+		
+		return compositeGroup;
+	}
+	
 	
 	/**
 	 * 
@@ -693,7 +775,7 @@ public class SVG_Object_Factory {
 		
 		ImagePlus testImp = IJ.openImage(System.getProperty("user.home") + "/Desktop/boats.tif");
 				
-		SVG_Object_Factory.saveImageAndOverlaysAsSVG(testImp, new File(testImp.getOriginalFileInfo().getFilePath()), 3.0, true, false);
+		SVG_Object_Factory.saveImageAndOverlaysAsSVG(testImp, new File(testImp.getOriginalFileInfo().getFilePath()), 3.0, false, true, false);
 	}
 	
 	
