@@ -4,9 +4,9 @@ The SVG Exporter is meant to export images and all related overlays in images, e
 
 ## Installation
 
-The BioVoxxel Figure tools are automatically installed together with the BioVoxxel Toolbox.
+The BioVoxxel Figure tools can be installed in Fiji via its own update site.
 
-Run: >Help >Update... and activate the BioVoxxel update site and then apply changes in the updater.
+Run: _>Help >Update..._ and activate the **BioVoxxel Figure Tools** update site and then apply changes in the updater.
 
 The *BioVoxxel Figure Tools* come with a convenience menu which can be retreived from the `More >>` tools icon.
 
