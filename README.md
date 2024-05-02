@@ -22,10 +22,20 @@ Channels can be further shown or hidden using the channel checkboxes.
 
 ![image](https://user-images.githubusercontent.com/10721817/233982982-08f0cde1-5600-4aa1-9a1a-c39eab770a61.png)
 
-### 5D Contrast Optimizer
-This tool will check all channels, z-slices and time frames for all open or provided images and adjust the contrast equally to all images avoiding strong oversaturation. And all of that with basically just one click. CAUTION: All images that should be compared to each other in a figure need to be adjusted here at the same time.
+### Determine Channel Saturation
 
-![image](https://github.com/biovoxxel/BioVoxxel-Figure-Tools/assets/10721817/bca3ab15-6766-4645-a981-b37250ade297)
+This tool should help to test in a single 5D image to determine how much pixel saturation in percent exists to better judge if any contrast enhancement is feasible or should better not be done. It can also help to determine if the offset and other imageing setups during the acquisition process were potentially chosen relatively extreme and could be optimized to reduce the amount of data clipping. It processes up to 5 dimensional images (channels, volume, time).
+
+![grafik](https://github.com/biovoxxel/BioVoxxel-Figure-Tools/assets/10721817/94d80762-6aa9-4aeb-8861-875383249f9b)
+
+### 5D Contrast Optimizer
+
+This tool will check all channels, z-slices and time frames for all open or provided images and adjust the contrast equally to all images avoiding strong oversaturation. All of that with basically just one click. It offers different saturation values to be specified per channel, since different channels might have different needs. Original saturation can be checked using the [Determine Channel Saturation](/#determine-channel-saturation) tool to have a better orientation.
+
+CAUTION: All images that should be compared to each other in a figure need to be adjusted here at the same time.
+
+![grafik](https://github.com/biovoxxel/BioVoxxel-Figure-Tools/assets/10721817/fc07b369-bd26-410f-aaf2-91194e2c7faa)
+
 
 Comparing images before and after adjustment:
 ![image](https://github.com/biovoxxel/BioVoxxel-Figure-Tools/assets/10721817/a9735ba6-4df3-40bd-871f-78b8e8c68a61)
@@ -102,6 +112,5 @@ Tools like QuickFigure are amazing and offer more options. I personally, however
 ---
 
 ### Acknowledgement
-[](url)
 
 Thanks to [@Wayne](https://forum.image.sc/u/wayne/summary) (Rasband), [@K_Taz](https://forum.image.sc/u/k_taz/summary) (Kévin Terretaz), [@NicoDF](https://forum.image.sc/u/nicodf/summary) (Nicolás De Francesco) for the implementation of the inverting LUT function.
