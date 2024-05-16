@@ -134,6 +134,8 @@ public class InsetProcessor {
 			scaledImagePlus.setC(channel);
 			scaledImagePlus.setZ(slice);
 			scaledImagePlus.setT(frame);
+			
+			
 						
 		} else {
 			JOptionPane.showMessageDialog(null, "No open image detected");

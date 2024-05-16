@@ -11,6 +11,7 @@ import org.scijava.prefs.PrefService;
 import org.scijava.util.ColorRGB;
 import org.scijava.widget.Button;
 
+import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.Macro;
 import ij.WindowManager;
@@ -56,9 +57,35 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 		
 		setPreferences();
 			
+		String macroRecording = "//------------------------------------------\n"
+				+ "//Create reproducible zoomed image inset\n";
+		
 		
 		Roi roi = inputImage.getRoi();
 		
+		int channel = inputImage.getC();
+		int slice = inputImage.getZ();
+		int frame = inputImage.getT();
+		
+		if (inputImage.isComposite()) {
+			
+			CompositeImage ci = ((CompositeImage) inputImage);
+			boolean[] activeChannels = ci.getActiveChannels();
+			
+			String activeChannelString = "";
+			
+			for (int c = 1; c <= activeChannels.length; c++) {
+				if (activeChannels[c-1]) {
+					activeChannelString += 1;					
+				} else {
+					activeChannelString += 0;	
+				}
+			}
+			
+			macroRecording += "Stack.setActiveChannels(" + activeChannelString + ");\n";
+			
+		}
+						
 		Recorder recorder = Recorder.getInstance();
 		
 		if (roi != null) {
@@ -70,22 +97,29 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 						
 			Rectangle roiBounds = inputImage.getRoi().getBounds();
 			
-			Recorder.recordString("selectImage(\"" + inputImage.getTitle() + "\");\n");
+			macroRecording += "Stack.setPosition(" + channel + ", " + slice + ", " + frame + ");\n"
+					+ "selectImage(\"" + inputImage.getTitle() + "\");\n";
+			
 			if (roi instanceof OvalRoi) {
-				Recorder.recordString("makeOval(" + roiBounds.x + ", " + roiBounds.y + ", " +  roiBounds.width + ", " +  roiBounds.height + ");\n");
+				macroRecording += "makeOval(" + roiBounds.x + ", " + roiBounds.y + ", " +  roiBounds.width + ", " +  roiBounds.height + ");\n";
 			} else {
 				
-				Recorder.recordString("makeRectangle(" + roiBounds.x + ", " + roiBounds.y + ", " +  roiBounds.width + ", " +  roiBounds.height + ");\n");
+				macroRecording += "makeRectangle(" + roiBounds.x + ", " + roiBounds.y + ", " +  roiBounds.width + ", " +  roiBounds.height + ");\n";
 			}
-			Recorder.recordString("run(\"Create framed inset zoom\", \"magnification="+magnification
+			
+			macroRecording +=	"run(\"Create framed inset zoom\", \"magnification="+magnification
 					+ " aspectratio=" + aspectRatio
 					+ " addframe=" + addFrame
 					+ " addframetoinset=" + addFrameToInset
 					+ " framewidth=" + frameWidth
 					+ " framecolor=" + frameColor
-					+ "\");\n");
+					+ "\");\n";
+					
+			Recorder.recordString(macroRecording);
 			
 			InsetProcessor.createInset();
+			
+			addMetadata(macroRecording);
 			
 			
 			if (recorder != null) {
@@ -105,6 +139,26 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 		prefs.put(getClass(), "frameWidth", frameWidth);
 		prefs.put(getClass(), "frameColor", frameColor.toString());
 	}
+	
+	
+	private void addMetadata(String recording) {
+		
+		String imageInfo = inputImage.getInfoProperty();
+		
+		String newImageInfo = "";
+
+		if (imageInfo == null) {
+			newImageInfo = recording;
+		} else {
+			newImageInfo = imageInfo + System.lineSeparator() + recording;
+			inputImage.setProperty("Info", null);
+		}
+		
+		inputImage.setProperty("Info", newImageInfo);
+		
+	}
+	
+	
 	
 	
 	@SuppressWarnings("unused")
