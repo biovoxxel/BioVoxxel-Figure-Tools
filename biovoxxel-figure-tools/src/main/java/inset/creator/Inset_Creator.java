@@ -119,7 +119,7 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 			
 			InsetProcessor.createInset();
 			
-			addMetadata(macroRecording);
+			addMetadata(inputImage, macroRecording);
 			
 			
 			if (recorder != null) {
@@ -141,9 +141,9 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 	}
 	
 	
-	private void addMetadata(String recording) {
+	private void addMetadata(ImagePlus image, String recording) {
 		
-		String imageInfo = inputImage.getInfoProperty();
+		String imageInfo = image.getInfoProperty();
 		
 		String newImageInfo = "";
 
@@ -151,10 +151,10 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 			newImageInfo = recording;
 		} else {
 			newImageInfo = imageInfo + System.lineSeparator() + recording;
-			inputImage.setProperty("Info", null);
+			image.setProperty("Info", null);
 		}
 		
-		inputImage.setProperty("Info", newImageInfo);
+		image.setProperty("Info", newImageInfo);
 		
 	}
 	
