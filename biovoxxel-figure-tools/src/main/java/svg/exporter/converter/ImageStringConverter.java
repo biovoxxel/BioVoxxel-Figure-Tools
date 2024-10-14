@@ -13,7 +13,7 @@ import ij.io.FileSaver;
 public class ImageStringConverter {
 
 	
-	private final String TEMP_FILE_PATH = System.getProperty("java.io.tmpdir") + "temp_image_file.tif"; 
+	private final String TEMP_FILE_PATH = System.getProperty("java.io.tmpdir") + File.separator + "temp_image_file.tif"; 
 	
 	
 
