@@ -18,7 +18,7 @@ This tool is the equivalent of the normal ImageJ channels tool and based on its 
 Therefore, create a new sub-folder in the `Fiji.app > luts` folder and add .lut files you like in that folder. After restarting the LUT Channels Tool a right-click in the panel area around the buttons enables you to set the lut folder used to create the buttons panel. Click any button to apply a certain LUT to the current image or active channel of a composite image.
 Channels can be further shown or hidden using the channel checkboxes.
 `Split Channels` calls the IJ split channels command. The same is true for `Merge Channels`.
-`CDV Test` usis IJ's function to simulate the most common color-deficient vision issues to check if the currently used LUT is useful for scientific publications.
+`CDV Test` (Color Deficient Vision Test) uses IJ's function to simulate the most common color-deficient vision issues to check if the currently used LUT is useful for scientific publications.
 
 ![image](https://user-images.githubusercontent.com/10721817/233982982-08f0cde1-5600-4aa1-9a1a-c39eab770a61.png)
 
@@ -107,7 +107,7 @@ Tools like QuickFigure are amazing and offer more options. I personally, however
 * interpolation is not used to visualize the original pixels of the micrographs in the published document which enables the reader/observer to see exactly what the experimenter saw to draw a concludion based on the same information. Currently, many publication figures either suffer from JPEG artifacts, are too low in resolution or massively blurred due to interpolation.
 * The figure creation tools also offers to Create a framed inset zoom version of a selected area, which uses fixed frame sizes (this is where a small restriction exists) but creates a zoomed inset as separate image with the original image quality, without interpolation and correct scaling information to add an updated scale bar.
 * All indicators like scale bars, calibration bars and all other ROIs in the image overlay should be transferred as editable vector graphics objects
-* best, some metadata is still present. Therefore, the SVG export adds all metadata present in ImageJ to the Image description of the SVG file (see below), which can then be revised in Inkscape still (unfortunately it does not transfer to PDFs)
+* best, some metadata is still present. Therefore, the SVG export adds all metadata present in ImageJ to the Image description of the SVG file, which can then be revised in Inkscape still (unfortunately it does not transfer to PDFs)
 
 ---
 
