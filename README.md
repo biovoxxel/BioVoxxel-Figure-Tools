@@ -51,8 +51,17 @@ Comparing images before and after adjustment:
 
 ### Creating zoomed-in and resized versions of image areas (e.g. as insets)
 Simple zoomed-in inset images can be created at fixed integer size factors to avoid pixel artifacts by using the funtion `Create framed inset zoom`
+Different inset types are supported:
+* straight rectangles with an aspect ratio equal to the original image
+* squares with the final width or height of the image
+* rotated rectangles or squares with angles between -90 to +90 degrees
+* circular insets (creating a clipping mask in Inkscape)
 
-![image](https://github.com/biovoxxel/BioVoxxel-Figure-Tools/assets/10721817/ef6761a6-f91f-4a88-9a84-be41ab37fec6)
+![Framed_inset_zoom_tool](https://github.com/user-attachments/assets/be692bc2-fede-422e-a530-88e8c7f59e09)
+
+Once exported as SVG (see below), figures can be composed accordingly in Inkscape
+
+![zoomed_inset_figure](https://github.com/user-attachments/assets/93716f63-5d7a-4e9b-81fc-fa3fc1f636c5)
 
 ### Exporting SVG vector graphics directly from Fiji
 
