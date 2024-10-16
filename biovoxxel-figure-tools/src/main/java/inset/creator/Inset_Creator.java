@@ -34,6 +34,9 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 	@Parameter (label = "Aspect ratio", choices = {"Image", "Square_height", "Square_width", "Circle_height", "Circle_width"}, callback = "magnificationChanged")
 	public static String aspectRatio = "Image";
 	
+	@Parameter (label = "Angle (-90 to 90)", callback = "magnificationChanged", min = "-90", max = "90", stepSize = "1", persist = false)
+	public static Integer roiAngle = 0;
+	
 	@Parameter (label = "Add frame to original")
 	public static Boolean addFrame = true;
 	
@@ -109,6 +112,7 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 			
 			macroRecording +=	"run(\"Create framed inset zoom\", \"magnification="+magnification
 					+ " aspectratio=" + aspectRatio
+					+ " roiangle=" + roiAngle
 					+ " addframe=" + addFrame
 					+ " addframetoinset=" + addFrameToInset
 					+ " framewidth=" + frameWidth
@@ -190,10 +194,13 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 			inputImage = WindowManager.getCurrentImage();
 			magnification = Integer.parseInt(paramArray[0].substring(paramArray[0].indexOf("=")+1));
 			aspectRatio = paramArray[1].substring(paramArray[1].indexOf("=")+1);
-			addFrame = Boolean.parseBoolean(paramArray[2].substring(paramArray[2].indexOf("=")+1));
-			addFrameToInset = Boolean.parseBoolean(paramArray[3].substring(paramArray[3].indexOf("=")+1));
-			frameWidth = Integer.parseInt(paramArray[4].substring(paramArray[4].indexOf("=")+1));
-			frameColor = new ColorRGB(paramArray[5].substring(paramArray[5].indexOf("=")+1));
+			roiAngle = Integer.parseInt(paramArray[2].substring(paramArray[2].indexOf("=")+1));
+			addFrame = Boolean.parseBoolean(paramArray[3].substring(paramArray[3].indexOf("=")+1));
+			addFrameToInset = Boolean.parseBoolean(paramArray[4].substring(paramArray[4].indexOf("=")+1));
+			frameWidth = Integer.parseInt(paramArray[5].substring(paramArray[5].indexOf("=")+1));
+			frameColor = new ColorRGB(paramArray[6].substring(paramArray[6].indexOf("=")+1));
+			
+			InsetProcessor.magnificationChanged();
 			
 			InsetProcessor.createInset();
 			
