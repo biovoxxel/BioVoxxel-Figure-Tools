@@ -11,10 +11,6 @@ import ij.ImagePlus;
 import ij.io.FileSaver;
 
 public class ImageStringConverter {
-
-	
-	private final String TEMP_FILE_PATH = System.getProperty("java.io.tmpdir") + File.separator + "temp_image_file.tif"; 
-	
 	
 
 	public String getBase64StringFromImagePlus(ImagePlus imp) {
@@ -22,8 +18,14 @@ public class ImageStringConverter {
 
 		if (imp != null) {
 			
-			new FileSaver(imp).saveAsTiff(TEMP_FILE_PATH);
+			String TEMP_FOLDER = System.getProperty("java.io.tmpdir");
+			if (!TEMP_FOLDER.endsWith(File.separator)) {
+				TEMP_FOLDER += File.separator;
+			}
+			String TEMP_FILE_PATH = TEMP_FOLDER + "temp_image_file.tif"; 
+			System.out.println(TEMP_FILE_PATH);
 			
+			new FileSaver(imp).saveAsTiff(TEMP_FILE_PATH);
 			File imageFile = new File(TEMP_FILE_PATH);
 			
 			
