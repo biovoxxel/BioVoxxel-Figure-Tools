@@ -34,7 +34,7 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 	@Parameter (label = "Aspect ratio", choices = {"Image", "Square_height", "Square_width", "Circle_height", "Circle_width"}, callback = "magnificationChanged")
 	public static String aspectRatio = "Image";
 	
-	@Parameter (label = "Angle (-90 to 90)", callback = "magnificationChanged", min = "-90", max = "90", stepSize = "1", persist = false)
+	@Parameter (label = "Angle (-90 to 90)", callback = "roiRotated", min = "-90", max = "90", stepSize = "1", persist = false, style = "slider")
 	public static Integer roiAngle = 0;
 	
 	@Parameter (label = "Add frame to original")
@@ -170,6 +170,14 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 		inputImage = WindowManager.getCurrentImage();
 		InsetProcessor.magnificationChanged();
 		
+		roiRotated();
+		
+	}
+	
+	private void roiRotated() {
+		inputImage = WindowManager.getCurrentImage();
+		InsetProcessor.roiRotated();
+		
 	}
 	
 	public void run() {
@@ -202,11 +210,14 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 			
 			InsetProcessor.magnificationChanged();
 			
+			InsetProcessor.roiRotated();
+			
 			InsetProcessor.createInset();
 			
 		} else {
 			System.out.println("run from GUI");
 			InsetProcessor.magnificationChanged();
+			InsetProcessor.roiRotated();
 		}
 	}
 

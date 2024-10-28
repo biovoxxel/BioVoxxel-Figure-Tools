@@ -26,6 +26,7 @@ public class InsetProcessor {
 	private static ImageProcessor insetImageProcessor;
 	private static ImagePlus insetImagePlus;
 	private static Roi frameRoi;
+	private static int formerAngle = 0;
 	private static int frameWidth;
 	private static Color frameColor;
 		
@@ -72,7 +73,7 @@ public class InsetProcessor {
 			
 			
 			Roi ovalRoi = null;
-			if (Inset_Creator.aspectRatio.contains("Circle")) {			
+			if (Inset_Creator.aspectRatio.contains("Circle")) {
 				ovalRoi = new OvalRoi(frameWidth/2, frameWidth/2, scaledImagePlus.getWidth()-frameWidth, scaledImagePlus.getHeight()-frameWidth);
 			}
 			
@@ -242,15 +243,32 @@ public class InsetProcessor {
 			currentRoi = new Roi(x, y, width, height);			
 		}
 		
-		if (!Inset_Creator.aspectRatio.contains("Circle")) {
-						
-			currentRoi = RoiRotator.rotate(currentRoi, Inset_Creator.roiAngle);
-			
-		} 
-		
 		ShapeRoi shapeRoi = new ShapeRoi(currentRoi);
 		inputImagePlus.setRoi(shapeRoi);
 		
+		formerAngle = 0;
+		
+	}
+	
+	
+	public static void roiRotated() {
+		
+		ImagePlus inputImagePlus = Inset_Creator.inputImage;
+		Roi currentRoi = inputImagePlus.getRoi();
+		
+		if (currentRoi == null) {
+			magnificationChanged();
+		}
+		
+		if (!Inset_Creator.aspectRatio.contains("Circle")) {
+			
+			currentRoi = RoiRotator.rotate(currentRoi, Inset_Creator.roiAngle - formerAngle);
+			
+			formerAngle = Inset_Creator.roiAngle;
+			
+			ShapeRoi shapeRoi = new ShapeRoi(currentRoi);
+			inputImagePlus.setRoi(shapeRoi);
+		}
 	}
 	
 	/** Rotates duplicated part of image
