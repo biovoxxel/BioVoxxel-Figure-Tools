@@ -272,6 +272,7 @@ public class InsetProcessor {
 	}
 	
 	/** Rotates duplicated part of image
+	 * The original code is adapted to use BICUBIC interpolation while rotating the image !!!
 	- impA is original image,
 	- roiA is orig rotatedRect
 	- impB contains duplicated overlapping bounding rectangle	

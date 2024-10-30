@@ -89,6 +89,11 @@ public class SVGExporter extends DynamicCommand {
 		}
 		
 		String folderPath = folder.getAbsolutePath();
+		
+		if (!folder.exists()) {
+			folder.mkdir();
+		}
+		
 		if (!folderPath.endsWith(File.separator)) {
 			folderPath += File.separator;
 		}

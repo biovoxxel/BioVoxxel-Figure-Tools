@@ -47,6 +47,10 @@ public class BatchSvgExporter extends DynamicCommand {
 			int[] imageIDList = WindowManager.getIDList();
 			int exportCounter = 1;
 			
+			if (!folder.exists()) {
+				folder.mkdir();
+			}			
+			
 			for (int i = 0; i < imageIDList.length; i++) {
 				
 				ImagePlus imp = WindowManager.getImage(imageIDList[i]);
