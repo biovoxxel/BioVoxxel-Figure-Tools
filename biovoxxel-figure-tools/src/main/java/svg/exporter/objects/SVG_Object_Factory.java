@@ -641,10 +641,15 @@ public class SVG_Object_Factory {
 		String textAsString = textRoi.getText().trim();
 
 		Font currentFont = textRoi.getCurrentFont();
+		System.out.println("Font = " + currentFont);
 		int fontSize = currentFont.getSize();
-		int fontStyle = currentFont.getStyle();	//still not implemented
+		//System.out.println(fontSize);
+		int fontStyle = currentFont.getStyle();
+		//System.out.println(fontStyle);
 		String fontFamily = currentFont.getFamily();
-			
+		//System.out.println(fontFamily);
+		
+		
 				
 		Color textColor = textRoi.getStrokeColor();
 		
@@ -682,7 +687,11 @@ public class SVG_Object_Factory {
 			text.setAttributeNS(svgNS, SVGSyntax.CSS_FONT_STYLE_PROPERTY, SVGSyntax.CSS_ITALIC_VALUE);
 			text.setAttributeNS(svgNS, SVGSyntax.CSS_FONT_WEIGHT_PROPERTY, SVGSyntax.CSS_NORMAL_VALUE);
 			break;
-
+		case (Font.BOLD + Font.ITALIC):
+			text.setAttributeNS(svgNS, SVGSyntax.CSS_FONT_STYLE_PROPERTY, SVGSyntax.CSS_ITALIC_VALUE);
+			text.setAttributeNS(svgNS, SVGSyntax.CSS_FONT_WEIGHT_PROPERTY, SVGSyntax.CSS_BOLD_VALUE);
+			break;
+		
 		default:
 			text.setAttributeNS(svgNS, SVGSyntax.CSS_FONT_STYLE_PROPERTY, SVGSyntax.CSS_NORMAL_VALUE);
 			text.setAttributeNS(svgNS, SVGSyntax.CSS_FONT_WEIGHT_PROPERTY, SVGSyntax.CSS_NORMAL_VALUE);

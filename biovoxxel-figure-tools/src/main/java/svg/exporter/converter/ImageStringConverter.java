@@ -22,12 +22,15 @@ public class ImageStringConverter {
 			if (!TEMP_FOLDER.endsWith(File.separator)) {
 				TEMP_FOLDER += File.separator;
 			}
-			String TEMP_FILE_PATH = TEMP_FOLDER + "temp_image_file.tif"; 
+			String TEMP_FILE_PATH = TEMP_FOLDER + "temp_image_file.png"; 
 			System.out.println(TEMP_FILE_PATH);
-			
-			new FileSaver(imp).saveAsTiff(TEMP_FILE_PATH);
+						
+			imp.setHideOverlay(true);
+						
+			new FileSaver(imp).saveAsPng(TEMP_FILE_PATH);
 			File imageFile = new File(TEMP_FILE_PATH);
 			
+			imp.setHideOverlay(false);
 			
 			try {
 				
