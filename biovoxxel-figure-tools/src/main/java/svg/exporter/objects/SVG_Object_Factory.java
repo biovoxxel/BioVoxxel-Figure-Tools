@@ -96,8 +96,8 @@ public class SVG_Object_Factory {
 
 		svgRoot = doc.getDocumentElement();
 		
-		System.out.println("doc=" + doc);
-		System.out.println("svgRoot=" + svgRoot);
+//		System.out.println("doc=" + doc);
+//		System.out.println("svgRoot=" + svgRoot);
 	}
 	
 	
@@ -224,7 +224,7 @@ public class SVG_Object_Factory {
 		}
 		
 		group.appendChild(image);
-		System.out.println("Added to document: " + image);
+//		System.out.println("Added to document: " + image);
 		
 		Overlay overlay = inputImp.getOverlay();
 				
@@ -258,7 +258,7 @@ public class SVG_Object_Factory {
 				group.appendChild(object);
 			}
 			
-			System.out.println("Added to document: " + object);
+//			System.out.println("Added to document: " + object);
 		}
 	
 		svgDoc.saveSvgFile(SvgUtilities.getSvgFile(inputImp, file));
@@ -647,6 +647,9 @@ public class SVG_Object_Factory {
 		int fontStyle = currentFont.getStyle();
 		//System.out.println(fontStyle);
 		String fontFamily = currentFont.getFamily();
+		if (fontFamily.equalsIgnoreCase("SansSerif") || fontFamily.equalsIgnoreCase("Dialog")) {
+			fontFamily = "Arial";
+		} 
 		//System.out.println(fontFamily);
 		
 		
