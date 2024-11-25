@@ -32,6 +32,9 @@ public class TimeSeriesSvgExporter extends DynamicCommand {
 	@Parameter(label = "Keep multichannel composite", required = true, description = "keeps channels accessible in Inkscape but increases file size")
 	Boolean keepComposite = false;
 	
+	@Parameter(label = "Make merge interactive", required = true, description = "")
+	Boolean makeInteractive = false;
+	
 	@Parameter(label = "First frame", required = true)
 	Integer firstFrame = 1;
 	
@@ -58,7 +61,7 @@ public class TimeSeriesSvgExporter extends DynamicCommand {
 				ImagePlus currentSliceImp = imp.crop("whole-slice");
 				currentSliceImp.setTitle(imp.getTitle() + "_" + slice);
 				
-				SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentSliceImp, createSVGFile(slice), interpolationRange, keepComposite, true, lockSensitiveROIs);
+				SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentSliceImp, createSVGFile(slice), interpolationRange, keepComposite, makeInteractive, true, lockSensitiveROIs);
 				
 			}
 		}

@@ -30,6 +30,9 @@ public class BatchSvgExporter extends DynamicCommand {
 		@Parameter(label = "Keep multichannel composite", required = true, description = "keeps channels accessible in Inkscape but increases file size")
 		Boolean keepComposite = false;
 		
+		@Parameter(label = "Make merge interactive", required = true, description = "")
+		Boolean makeInteractive = false;
+		
 		@Parameter(label = "Export channels", choices = {"None", "Color", "Grayscale", "Color (no overlays)", "Grayscale (no overlays)"})
 		String exportChannelsSeparately = "None";
 		
@@ -59,7 +62,7 @@ public class BatchSvgExporter extends DynamicCommand {
 				
 				
 				imp.setTitle(String.format("%02d", exportCounter) + "_" + originalImpTitle);
-				SVG_Object_Factory.saveImageAndOverlaysAsSVG(imp, folder, interpolationRange, keepComposite,true, lockSensitiveROIs);
+				SVG_Object_Factory.saveImageAndOverlaysAsSVG(imp, folder, interpolationRange, keepComposite, makeInteractive, true, lockSensitiveROIs);
 				imp.setTitle(originalImpTitle);
 				exportCounter++;
 				
@@ -80,7 +83,7 @@ public class BatchSvgExporter extends DynamicCommand {
 								currentChannel.setOverlay(imp.getOverlay());
 							}
 							System.out.println("fileName = " + fileName);
-							SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentChannel, folder, interpolationRange, false, true, lockSensitiveROIs);
+							SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentChannel, folder, interpolationRange, false, false, true, lockSensitiveROIs);
 							exportCounter++;
 						}
 					}
