@@ -19,6 +19,7 @@ import org.apache.batik.svggen.SVGSyntax;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -184,7 +185,7 @@ public class SVG_Object_Factory {
 	
 	
 	
-	public static void saveImageAndOverlaysAsSVG(ImagePlus imp, File file, double interpolationInterval, boolean keepComposite, boolean embedImage, boolean lockCriticalObjects) {
+	public static void saveImageAndOverlaysAsSVG(ImagePlus imp, File file, double interpolationInterval, boolean keepComposite, boolean makeInteractive, boolean embedImage, boolean lockCriticalObjects) {
 
 		ImagePlus inputImp = imp.crop("whole-slice");
 		inputImp.setTitle(imp.getTitle());
@@ -216,7 +217,7 @@ public class SVG_Object_Factory {
 		
 		Element image;
 		if (imp.isComposite() && keepComposite) {
-			image = svgDoc.createComposite(inputImp, embedImage);
+			image = svgDoc.createComposite(inputImp, embedImage, makeInteractive);
 			image.setAttributeNS(inkscapeNS, "inkscape:label", "composite_" + inputImp.getTitle());
 		} else {
 			image = svgDoc.createImage(inputImp, embedImage);
@@ -316,7 +317,7 @@ public class SVG_Object_Factory {
 	}
 	
 	
-	public Element createComposite(ImagePlus composite, boolean embed) {
+	public Element createComposite(ImagePlus composite, boolean embed, boolean makeInteractive) {
 
 		System.out.println("Creating composite SVG");
 		
@@ -370,6 +371,17 @@ public class SVG_Object_Factory {
 			}
 			
 			compositeGroup.appendChild(image);
+		}
+		
+		if (makeInteractive) {
+			System.out.println("Making composite SVG interactive");
+			
+			long random_number = Math.round(Math.random()*1000);
+			
+			compositeGroup.setAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE, "image-group-" + random_number);
+			
+			Element script = createChannelSwapScript(random_number);
+			compositeGroup.appendChild(script);
 		}
 		
 		
@@ -774,6 +786,72 @@ public class SVG_Object_Factory {
 		
 	}
 	
+	public Element createChannelSwapScript(long id) {
+		Element script = doc.createElementNS(svgNS, SVGSyntax.SVG_SCRIPT_TAG);
+		
+		script.setAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE, "channelswitch");
+		script.setAttributeNS(svgNS, SVGSyntax.SVG_TYPE_ATTRIBUTE, "text/javascript");
+		
+		Text scriptText = doc.createCDATASection(""
+				+ "        // Function to handle image combinations\r\n"
+				+ "        function initializeImageCycle() {\r\n"
+				+ "            const images = Array.from(document.querySelectorAll('#image-group-" + id + " image'));\r\n"
+				+ "            const totalImages = images.length;\r\n"
+				+ "            let currentCombinationIndex = -1;\r\n"
+				+ "\r\n"
+				+ "            // Generate all unique pairs of image indices\r\n"
+				+ "            const combinations = [];\r\n"
+				+ "            for (let i = 0; i < totalImages; i++) {\r\n"
+				+ "                for (let j = i + 1; j < totalImages; j++) {\r\n"
+				+ "                    combinations.push([i, j]);\r\n"
+				+ "                }\r\n"
+				+ "            }\r\n"
+				+ "\r\n"
+				+ "            // Function to apply the screen blending mode\r\n"
+				+ "            function showCombination(index) {\r\n"
+				+ "                // Reset all images to normal blend mode and hide them\r\n"
+				+ "                images.forEach(img => {\r\n"
+				+ "                    img.setAttribute('style', 'display: none; mix-blend-mode: normal; position: absolute;');\r\n"
+				+ "                });\r\n"
+				+ "\r\n"
+				+ "                // If showing all merged (index === -1)\r\n"
+				+ "                if (index === -1) {\r\n"
+				+ "                    images.forEach(img => {\r\n"
+				+ "                        img.setAttribute('style', 'display: block; mix-blend-mode: screen; position: absolute;');\r\n"
+				+ "                    });\r\n"
+				+ "                    return;\r\n"
+				+ "                }\r\n"
+				+ "\r\n"
+				+ "                // Get the pair for the current index\r\n"
+				+ "                const [first, second] = combinations[index];\r\n"
+				+ "                images[first].setAttribute('style', 'display: block; mix-blend-mode: screen; position: absolute;');\r\n"
+				+ "                images[second].setAttribute('style', 'display: block; mix-blend-mode: screen; position: absolute;');\r\n"
+				+ "            }\r\n"
+				+ "\r\n"
+				+ "            // Event listener to cycle through combinations\r\n"
+				+ "            document.getElementById('image-group-" + id + "').addEventListener('click', () => {\r\n"
+				+ "                currentCombinationIndex++;\r\n"
+				+ "\r\n"
+				+ "                if (currentCombinationIndex >= combinations.length) {\r\n"
+				+ "                    currentCombinationIndex = -1; // Reset to show all merged\r\n"
+				+ "                }\r\n"
+				+ "\r\n"
+				+ "                showCombination(currentCombinationIndex);\r\n"
+				+ "            });\r\n"
+				+ "\r\n"
+				+ "            // Initialize with all images merged\r\n"
+				+ "            showCombination(-1);\r\n"
+				+ "        }\r\n"
+				+ "\r\n"
+				+ "        // Call the function to set up the cycle\r\n"
+				+ "        initializeImageCycle();\r\n"
+		);
+		
+		script.appendChild(scriptText);
+		
+		return script;
+	}
+	
 	
 	
 	
@@ -787,7 +865,7 @@ public class SVG_Object_Factory {
 		
 		ImagePlus testImp = IJ.openImage(System.getProperty("user.home") + "/Desktop/boats.tif");
 				
-		SVG_Object_Factory.saveImageAndOverlaysAsSVG(testImp, new File(testImp.getOriginalFileInfo().getFilePath()), 3.0, false, true, false);
+		SVG_Object_Factory.saveImageAndOverlaysAsSVG(testImp, new File(testImp.getOriginalFileInfo().getFilePath()), 3.0, false, true, true, false);
 	}
 	
 	
