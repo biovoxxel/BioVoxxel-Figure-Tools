@@ -28,7 +28,7 @@ public class SVGExporter extends DynamicCommand {
 	@Parameter
 	ImagePlus imp;
 
-	@Parameter(label = "File name", initializer = "getImageName", required = true, persist = false)
+	@Parameter(label = "File name", required = true, persist = false)
 	String fileName = "NoName.svg";
 	
 	@Parameter(label = "Target folder", required = true, style = "directory")
