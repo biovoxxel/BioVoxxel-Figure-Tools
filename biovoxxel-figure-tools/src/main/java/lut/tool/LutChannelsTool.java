@@ -1,6 +1,5 @@
 package lut.tool;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -25,6 +24,7 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -36,6 +36,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.border.EmptyBorder;
 
 import org.scijava.command.Command;
@@ -49,8 +50,6 @@ import ij.WindowManager;
 import ij.plugin.LutLoader;
 import ij.process.ImageProcessor;
 import ij.process.LUT;
-import javax.swing.JSeparator;
-import javax.swing.ScrollPaneConstants;
 
 
 @Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>LUT Channels Tool")
@@ -120,7 +119,6 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-
 		setContentPane(contentPane);
 		
 		popupMenu = new JPopupMenu();
@@ -257,7 +255,8 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		}		
 		
 		buttonPanel = new JPanel();
-		buttonPanel.setLayout(new GridLayout(0, 3, 5, 5)); // Initial layout
+		buttonPanel.setBorder(BorderFactory.createEmptyBorder());
+		buttonPanel.setLayout(new GridLayout(0, 3, 0, 0)); // Initial layout
 		addPopup(buttonPanel, popupMenu);
 //		GridBagConstraints gbc_buttonPanel = new GridBagConstraints();
 //		gbc_buttonPanel.insets = new Insets(0, 5, 5, 0);
@@ -267,12 +266,13 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 //		gbc_buttonPanel.gridy = 2;
 
 		scrollPane = new JScrollPane(buttonPanel);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setWheelScrollingEnabled(true);
         scrollPane.getVerticalScrollBar().setUnitIncrement(25);
         GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-		gbc_scrollPane.insets = new Insets(0, 5, 5, 0);
+		gbc_scrollPane.insets = new Insets(0, 0, 0, 0);
 		gbc_scrollPane.gridwidth = 7;
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
@@ -316,8 +316,8 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		contentPane.add(btnMergeChanels, gbc_btnMergeChanels);
 		
 				
-		btnCDV = new JButton("CDV Test");
-		btnCDV.setToolTipText("Display the main color deficient vision simulation of the current image");
+		btnCDV = new JButton("CVD Test");
+		btnCDV.setToolTipText("Display the main color vision deficient simulation of the current image");
 		btnCDV.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				performCdvTest();				
@@ -349,8 +349,8 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 		for(int b=0; b<lutFiles.size(); b++) {
 			try {
 				lutButton[b] = new JButton();
-				lutButton[b].setPreferredSize(new Dimension(100, 30)); // Set preferred size
-				lutButton[b].setMaximumSize(new Dimension(100, 30));
+				lutButton[b].setPreferredSize(new Dimension(72, 28)); // Set preferred size
+				lutButton[b].setMaximumSize(new Dimension(72, 28));
 				File lutFile = lutFiles.get(b);
 				
 				lutButton[b].setName(lutFile.getName());
@@ -365,6 +365,9 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
 				lutButton[b].setIcon(new ImageIcon(currentLUTImage));
 				
 				button_wrapper[b] = new JPanel();
+				button_wrapper[b].setLayout(new FlowLayout(FlowLayout.CENTER, 0, 2));
+				System.out.println(button_wrapper[b].getLayout());
+				button_wrapper[b].setBorder(BorderFactory.createEmptyBorder());
 				button_wrapper[b].add(lutButton[b]);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -404,14 +407,14 @@ public class LutChannelsTool extends JFrame implements Command, WindowListener, 
         if (lutButton.length == 0) return;
 
         // Calculate the number of columns based on the panel's width
-        int panelWidth = scrollPane.getViewport().getWidth();
-        int buttonWidth = 100; // Fixed button width
-        int gap = 10; // Horizontal gap between buttons
+        int panelWidth = scrollPane.getViewport().getWidth() - 10;
+        int buttonWidth = 72; // Fixed button width
+        int gap = 0; // Horizontal gap between buttons
         int columns = Math.max(1, panelWidth / (buttonWidth + gap));
 
         // Update GridLayout with the new column count
         int rows = (int) Math.ceil((double) lutButton.length / columns);
-        buttonPanel.setLayout(new GridLayout(rows, columns, 1, 1)); // Adjust gaps as needed
+        buttonPanel.setLayout(new GridLayout(rows, columns, 0, 0)); // Adjust gaps as needed
 
         // Refresh the panel
         buttonPanel.revalidate();
