@@ -154,7 +154,7 @@ The LUT Channels Tool allows to customize personal favorite LUTs, tests Color de
 	      <groupId>org.apache.maven.plugins</groupId>
 	      <artifactId>maven-jar-plugin</artifactId>
 	     <configuration>
-	        <outputDirectory>D:/BioVoxxel/Fiji/Fiji.app - BVTB 3.0/plugins</outputDirectory>
+	        <outputDirectory>build</outputDirectory>
 	      </configuration>
 	    </plugin>
 	  </plugins>
