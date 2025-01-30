@@ -1,6 +1,9 @@
 # BioVoxxel Figure Tools
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14217141.svg)](https://doi.org/10.5281/zenodo.14217141)
+![GitHub](https://img.shields.io/github/license/biovoxxel/biovoxxel-figure-tools?style=plastic)
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/biovoxxel/biovoxxel-figure-tools?include_prereleases&style=plastic)
+![GitHub issues](https://img.shields.io/github/issues/biovoxxel/biovoxxel-figure-tools?style=plastic)
 
 The SVG Exporter is meant to export images and all related overlays in images, embedd images and objects in SVG files to enable loss-less scalability of scientific data.
 
