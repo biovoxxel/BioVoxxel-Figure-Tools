@@ -77,7 +77,11 @@ public class BatchSvgExporter extends DynamicCommand {
 							String fileName = String.format("%02d", exportCounter) + "_C" + channel + "-" + imp.getTitle();
 							ImagePlus currentChannel = new ImagePlus(fileName, imp.getProcessor().duplicate());
 							if (exportChannelsSeparately.contains("Grayscale")) {
-								currentChannel.setLut(gray);
+								if (imp.isInvertedLut()) {
+									currentChannel.setLut(gray.createInvertedLut());
+								} else {
+									currentChannel.setLut(gray);						
+								}
 							}
 							if (!exportChannelsSeparately.contains("(no overlays)")) {
 								currentChannel.setOverlay(imp.getOverlay());
