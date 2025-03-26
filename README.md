@@ -25,7 +25,8 @@ Channels can be further shown or hidden using the channel checkboxes.
 `Split Channels` calls the IJ split channels command. The same is true for `Merge Channels`.
 `CDV Test` (Color Deficient Vision Test) uses IJ's function to simulate the most common color-deficient vision issues to check if the currently used LUT is useful for scientific publications.
 
-![image](https://user-images.githubusercontent.com/10721817/233982982-08f0cde1-5600-4aa1-9a1a-c39eab770a61.png)
+![image](https://github.com/user-attachments/assets/7f394559-1d49-4b02-93e6-39a0a2f69db7)
+
 
 ### Determine Channel Saturation
 
