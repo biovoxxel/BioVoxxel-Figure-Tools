@@ -74,7 +74,14 @@ Once exported as SVG (see below), figures can be composed accordingly in Inkscap
 ![image](https://github.com/biovoxxel/BioVoxxel-Figure-Tools/assets/10721817/3b910b28-d3df-418f-b22b-f18f782381e0)
 
 The functions allow exporting images together with all added overlays (ROIs from a Roi Manager, scale bars, calibration bars, arrows, etc.) in one step into an SVG vector graphics file. It supports multichannel composite images and ImageJ hyperstacks (so no need to flatten to an RGB). In composite images only visible channels will be exported enabling the user to export different versions of channel merges in an easy manner. 
-Even more convenient, you can export all open images at once as individual SVG files and import them easily in [Inkscape](https://inkscape.org/) (unfortunately Adobe Illustrator (TM) seems to currently not support this saved SVG file type).
+Even more convenient, you can export all open images at once as individual SVG files and import them easily in [Inkscape](https://inkscape.org/) (Adobe Illustrator (TM) should also be able to read those, but no guarantee).
+
+### Creating Interactive Figures !!!
+
+![image](https://github.com/user-attachments/assets/47e13cf9-a8d3-445e-bd4b-f0da4414e347)
+
+Now you can even create interactive SVG files on which observers can click in multichannel images and all possible combinations of always 2 channels will be shown and cycled through on clicking.
+Curious? [**Try it out here**](https://www.biovoxxel.de/tools/#interactive-figure)
 
 
 ### Exporting time points of time series (also from Hyperstacks)
