@@ -59,16 +59,16 @@ public class TimeSeriesSvgExporter extends DynamicCommand {
 				
 				imp.setT(slice);
 				ImagePlus currentSliceImp = imp.crop("whole-slice");
-				currentSliceImp.setTitle(imp.getTitle() + "_" + slice);
+				currentSliceImp.setTitle(imp.getTitle() + "_" + String.format("%04d", slice));
 				
-				SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentSliceImp, createSVGFile(slice), interpolationRange, keepComposite, makeInteractive, true, lockSensitiveROIs);
+				SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentSliceImp, createSVGFile(String.format("%04d", slice)), interpolationRange, keepComposite, makeInteractive, true, lockSensitiveROIs);
 				
 			}
 		}
 	}
 
 	
-	private File createSVGFile(Integer sliceNumber) {
+	private File createSVGFile(String sliceNumber) {
 						
 		if (!subfolderPath.endsWith(File.separator)) {
 			subfolderPath += File.separator;
