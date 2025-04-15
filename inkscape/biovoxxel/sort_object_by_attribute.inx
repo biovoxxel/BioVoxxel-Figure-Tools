@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <name>Sort Selected Objects</name>
+  <id>org.inkscape.extension.sort_selected_objects</id>
+
+  <label>Sort objects by their Label, ID, or Title.</label>
+  <seperator />
+  <label>Sorting affects Z-order (stacking order) of selected objects.</label>
+  <seperator />
+  <label>You have to unselect and reselect the objects manually to make Inkscape recognize the new order properly</label>
+  <seperator />
+  <spacer size="10" />
+
+  <param name="sort_by" type="enum" gui-text="Sort by:">
+    <option value="label">Label</option>
+    <option value="id">ID</option>
+    <option value="title">Title</option>
+  </param>
+
+  <effect>
+    <effects-menu>
+      <submenu name="BioVoxxel"/>
+    </effects-menu>
+  </effect>
+
+  <script>
+    <command location="inx" interpreter="python">sort_object_by_attribute.py</command>
+  </script>
+</inkscape-extension>
