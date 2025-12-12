@@ -11,7 +11,7 @@ import org.scijava.plugin.Plugin;
 
 import svg.importer.SVGImageReader;
 
-@Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Experimental>Import Polygon-ROIs from SVG")
+//@Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Experimental>Import Polygon-ROIs from SVG")
 public class SVGRoiImporter implements Command {
 
 	@Parameter(label = "SVG File", required = true, style = "file")
