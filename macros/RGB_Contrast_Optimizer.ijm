@@ -26,7 +26,7 @@
 
 
 #@File (label = "Choose directory", required=false, style="directory", persist=false, description="Only folders can be specified, not individual images") inputFolder
-#@String(value="All images in the specified folder need to be of RGB type and of the same size", visibility="MESSAGE") info
+#@String(value="All images in the specified folder need to be of RGB type and of the same size", visibility="MESSAGE", required="false") info
 #@Boolean (label = "Run on active open image", value=false, description="Runs on the actively selected single image, ONLY, but works on stacks") runOnOpen
 #@Float (label = "Pixel saturation (%)", value="0.01", min="0.00", max="1.00", style="format:0.00", stepSize="0.01", description="Avoid too much oversaturation. Best stay below 0.10 %") saturation
 #@File (label = "Save in subfolder", required=false, style="directory", description="If empty, images will not be saved, otherwise end up as .tif images in the specified folder") rgbTargetFolder
