@@ -142,7 +142,7 @@ for (i = 0; i < images.length; i++) {
 						run("Apply LUT", "slice");
 	//					resetMinAndMax();
 					}
-					metadata = metadata + "Channel " + c + ": min=" + absoluteMin[c] + " / max=" + absoluteMax[c] + "   (saturation = " + saturation[c] + " %)\n";
+					metadata = metadata + "Channel " + c+1 + "/Slice " + s+1 + "/Frame " + f+1 + ": min=" + absoluteMin[c] + " / max=" + absoluteMax[c] + "   (saturation = " + saturation[c] + " %)\n";
 				}
 			}
 			if (applyContrast) resetMinAndMax();
