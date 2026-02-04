@@ -49,9 +49,8 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 	@Parameter (label = "Frame color")
 	public static ColorRGB frameColor = new ColorRGB(255, 255, 255);
 	
-	@Parameter (label = "Create", callback = "createInset")
+	@Parameter (label = "Create", callback = "createInset", required = false)
 	public static Button createButton = null;
-
 	
 	
 		
