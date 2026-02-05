@@ -18,8 +18,8 @@ import svg.exporter.objects.SVG_Object_Factory;
  * @author Jan Brocher / BioVoxxel
  *
  */
-@Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Export time series as SVGs")
-public class TimeSeriesSvgExporter extends DynamicCommand {
+@Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Export Z-slices as SVGs")
+public class StackSliceSvgExporter extends DynamicCommand {
 	
 	private String subfolderPath = "";
 	
@@ -27,7 +27,7 @@ public class TimeSeriesSvgExporter extends DynamicCommand {
 	ImagePlus imp;
 	
 	@Parameter(label = "Target folder", required = true, style = "directory")
-	File folder;
+	File stackFolder;
 	
 	@Parameter(label = "Keep multichannel composite", required = true, description = "keeps channels accessible in Inkscape but increases file size")
 	Boolean keepComposite = false;
@@ -35,11 +35,11 @@ public class TimeSeriesSvgExporter extends DynamicCommand {
 	@Parameter(label = "Make merge interactive", required = true, description = "")
 	Boolean makeInteractive = false;
 	
-	@Parameter(label = "First frame", required = true)
-	Integer firstFrame = 1;
+	@Parameter(label = "First slice", required = true)
+	Integer firstSlice = 1;
 	
 	@Parameter(label = "Increment", required = true)
-	Integer increment = 1;
+	Integer sliceIncrement = 1;
 	
 	@Parameter(label = "Use Slice label as title", required = true)
 	Boolean useSliceLabel = false;
@@ -53,14 +53,14 @@ public class TimeSeriesSvgExporter extends DynamicCommand {
 	public void run() {
 			
 		subfolderPath = createSubfolder();
-							
-		for (int frame = firstFrame; frame <= imp.getNFrames(); frame += increment) {
+		
+		for (int slice = firstSlice; slice <= imp.getNSlices(); slice += sliceIncrement) {
 			
-			imp.setT(frame);
+			imp.setZ(slice);
 			ImagePlus currentSliceImp = imp.crop("whole-slice");
-			//currentSliceImp.setTitle(imp.getTitle() + "_T_" + String.format("%04d", slice));
+			//currentSliceImp.setTitle(imp.getTitle() + "_" + String.format("%04d", slice));
 			
-			SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentSliceImp, createSVGFile(String.format("%04d", frame)), interpolationRange, keepComposite, makeInteractive, true, lockSensitiveROIs);
+			SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentSliceImp, createSVGFile(String.format("%04d", slice)), interpolationRange, keepComposite, makeInteractive, true, lockSensitiveROIs);
 			
 		}
 	}
@@ -72,16 +72,15 @@ public class TimeSeriesSvgExporter extends DynamicCommand {
 			subfolderPath += File.separator;
 		}
 		
-		String imageTitle = null;
-		if (useSliceLabel && imp.getStack().getSliceLabel(imp.getT()) != null) {
-			
-			imageTitle = imp.getStack().getSliceLabel(imp.getT());
+		String imageTitle;
+		
+		if (useSliceLabel && imp.getStack().getSliceLabel(imp.getZ()) != null) {
+			imageTitle = imp.getStack().getSliceLabel(imp.getZ());
 		} else {
 			imageTitle = imp.getTitle();
 		}
-	
 		
-		String finalFilePath = subfolderPath + imageTitle + "_T_" + sliceNumber + ".svg";
+		String finalFilePath = subfolderPath + imageTitle + "_Z_" + sliceNumber + ".svg";
 		File outputFile = new File(finalFilePath);
 		System.out.println(outputFile);
 		
@@ -93,7 +92,7 @@ public class TimeSeriesSvgExporter extends DynamicCommand {
 		
 		String imageTitle = imp.getTitle();
 		
-		String folderPath = folder.getAbsolutePath();
+		String folderPath = stackFolder.getAbsolutePath();
 		if (!folderPath.endsWith(File.separator)) {
 			folderPath += File.separator;
 		}
@@ -119,10 +118,10 @@ public class TimeSeriesSvgExporter extends DynamicCommand {
 	
 	@SuppressWarnings("unused")
 	private void checkDimension() {
-		if (imp.getNFrames() == 1) {
-			cancel("The image has only 1 time frame\n"
-					+ "Check >Image >Properties... and set tine frame count correctly\n"
-					+ "or use Export Z-slices as SVGs instead");			
+		if (imp.getNSlices() == 1) {
+			cancel("The image has only 1 stack slice\n"
+					+ "Check >Image >Properties... and set Z-slice count correctly\n"
+					+ "or use Export time frames as SVGs instead");			
 		}
 	}
 	

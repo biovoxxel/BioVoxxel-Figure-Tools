@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.biovoxxel</groupId>
   <artifactId>BioVoxxel_Figure_Tools</artifactId>
-  <version>4.1.1-SNAPSHOT</version>
+  <version>4.2.0</version>
   <name>BioVoxxel Figure Tools</name>
   <description>The SVG Exporter is meant to export images and all related overlays in images, embedd images and objects in SVG files to enable loss-less scalability of scientific data. The Create Framed Inset Zoom function allows to create scaled copies of an image area with a certain integer zoom factor to prevent pixel alterations but keeping the original scaling information to allow proper scale bar addition.
 The metadata recorder (Meta-D-Rex) records processing steps image-specific and saves them in the image's header to reproducibly store image processing steps.
@@ -89,35 +89,30 @@ The LUT Channels Tool allows to customize personal favorite LUTs, tests Color de
 		<dependency>
 		    <groupId>org.scijava</groupId>
 		    <artifactId>scijava-common</artifactId>
-		    <version>2.89.0</version>
 		</dependency>
 	
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
 			<scope>provided</scope>
-			<version>1.53t</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
 		<dependency>
 		    <groupId>commons-io</groupId>
 		    <artifactId>commons-io</artifactId>
-		    <version>2.11.0</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-dom -->
 		<dependency>
 		    <groupId>org.apache.xmlgraphics</groupId>
 		    <artifactId>batik-dom</artifactId>
-		    <version>1.16</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-anim -->
 		<dependency>
 		    <groupId>org.apache.xmlgraphics</groupId>
 		    <artifactId>batik-anim</artifactId>
-		    <version>1.16</version>
 		</dependency>
 		
 		
@@ -125,7 +120,6 @@ The LUT Channels Tool allows to customize personal favorite LUTs, tests Color de
 		<dependency>
 		    <groupId>org.apache.xmlgraphics</groupId>
 		    <artifactId>batik-svggen</artifactId>
-		    <version>1.16</version>
 		</dependency>
 		
 	</dependencies>
