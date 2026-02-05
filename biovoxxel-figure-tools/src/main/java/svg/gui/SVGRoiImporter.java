@@ -7,7 +7,6 @@ import javax.swing.JOptionPane;
 
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
 
 import svg.importer.SVGImageReader;
 

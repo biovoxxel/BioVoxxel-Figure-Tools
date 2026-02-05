@@ -2,8 +2,6 @@ package svg.gui;
 
 import java.io.File;
 
-import javax.swing.JOptionPane;
-
 import org.scijava.command.Command;
 import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
@@ -58,7 +56,11 @@ public class StackSliceSvgExporter extends DynamicCommand {
 			
 			imp.setZ(slice);
 			ImagePlus currentSliceImp = imp.crop("whole-slice");
-			//currentSliceImp.setTitle(imp.getTitle() + "_" + String.format("%04d", slice));
+			if (useSliceLabel && imp.getStack().getSliceLabel(slice) != null) {
+				currentSliceImp.setTitle(imp.getStack().getSliceLabel(slice));
+			} else {
+				currentSliceImp.setTitle(imp.getTitle() + "_T_" + String.format("%04d", slice));
+			}
 			
 			SVG_Object_Factory.saveImageAndOverlaysAsSVG(currentSliceImp, createSVGFile(String.format("%04d", slice)), interpolationRange, keepComposite, makeInteractive, true, lockSensitiveROIs);
 			

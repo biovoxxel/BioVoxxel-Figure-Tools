@@ -213,17 +213,19 @@ public class SVG_Object_Factory {
 				
 		Element group = doc.createElementNS(svgNS, SVGSyntax.SVG_G_TAG);
 		svgRoot.appendChild(group);
+
+		group.setAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE, inputImp.getTitle());
 		group.setAttributeNS(inkscapeNS, "inkscape:label", "group_" + inputImp.getTitle());
 		
 		Element image;
 		if (imp.isComposite() && keepComposite) {
 			image = svgDoc.createComposite(inputImp, embedImage, makeInteractive);
-			image.setAttributeNS(inkscapeNS, "inkscape:label", "composite_" + inputImp.getTitle());
+			//image.setAttributeNS(inkscapeNS, "inkscape:label", "#composite_" + inputImp.getTitle());
 		} else {
 			image = svgDoc.createImage(inputImp, embedImage);
-			image.setAttributeNS(inkscapeNS, "inkscape:label", inputImp.getTitle());			
+			//image.setAttributeNS(inkscapeNS, "inkscape:label", "#" + inputImp.getTitle());			
 		}
-		
+				
 		group.appendChild(image);
 //		System.out.println("Added to document: " + image);
 		
@@ -293,6 +295,8 @@ public class SVG_Object_Factory {
 		
 		Element image = doc.createElementNS(svgNS, SVGSyntax.SVG_IMAGE_TAG);
 		
+		image.setAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE, imp.getTitle());
+		image.setAttributeNS(inkscapeNS, "inkscape:label", imp.getTitle());
 		image.setAttributeNS(svgNS, "x", "0");
 		image.setAttributeNS(svgNS, "y", "0");
 		image.setAttributeNS(svgNS, "width", "" + imp.getWidth());
@@ -340,6 +344,7 @@ public class SVG_Object_Factory {
 			
 			Element image = doc.createElementNS(svgNS, SVGSyntax.SVG_IMAGE_TAG);
 			
+			image.setAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE, fileName);
 			image.setAttributeNS(inkscapeNS, "inkscape:label", fileName);
 			image.setAttributeNS(svgNS, "x", "0");
 			image.setAttributeNS(svgNS, "y", "0");
