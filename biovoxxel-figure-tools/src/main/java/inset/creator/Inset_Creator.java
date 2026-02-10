@@ -12,11 +12,13 @@ import org.scijava.util.ColorRGB;
 import org.scijava.widget.Button;
 
 import ij.CompositeImage;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.Macro;
 import ij.WindowManager;
 import ij.gui.OvalRoi;
 import ij.gui.Roi;
+import ij.plugin.ScaleBar;
 import ij.plugin.frame.Recorder;
 
 @Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Create framed inset zoom")
@@ -41,17 +43,19 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 	public static Boolean addFrame = true;
 	
 	@Parameter (label = "Add frame to inset")
-	public static Boolean addFrameToInset = true;
-	
+	public static Boolean addFrameToInset = false;
+		
 	@Parameter (label = "Frame width (px)", min = "1")
 	public static Integer frameWidth = 3;
 	
 	@Parameter (label = "Frame color")
 	public static ColorRGB frameColor = new ColorRGB(255, 255, 255);
 	
+	@Parameter (label = "Add Scalebar to inset", description = "this only takes efect if run from the GUI. It will not be executed when run from a macro")
+	public static Boolean startScaleBarPlugin = false;
+	
 	@Parameter (label = "Create", callback = "createInset", required = false)
 	public static Button createButton = null;
-	
 	
 		
 	@SuppressWarnings("unused")
@@ -116,11 +120,13 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 					+ " addframetoinset=" + addFrameToInset
 					+ " framewidth=" + frameWidth
 					+ " framecolor=" + frameColor
+					+ " startscalebarplugin=" + startScaleBarPlugin
 					+ "\");\n";
 					
 			Recorder.recordString(macroRecording);
 			
 			InsetProcessor.createInset();
+			
 			
 			addMetadata(inputImage, macroRecording);
 			
@@ -129,6 +135,11 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 				Recorder.record = true;
 				System.out.println("recording set = " + Recorder.record);
 				
+			}
+			
+			//this should just happen when used from the GUI
+			if (startScaleBarPlugin) {
+				new ScaleBar().run(null);
 			}
 		}
 	}
@@ -141,6 +152,7 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 		prefs.put(getClass(), "addFrameToInset", addFrameToInset);
 		prefs.put(getClass(), "frameWidth", frameWidth);
 		prefs.put(getClass(), "frameColor", frameColor.toString());
+		prefs.put(getClass(), "startScaleBarPlugin", startScaleBarPlugin);
 	}
 	
 	
@@ -198,6 +210,7 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 				System.out.println(paramArray[i]);
 			}
 			
+			
 			inputImage = WindowManager.getCurrentImage();
 			magnification = Integer.parseInt(paramArray[0].substring(paramArray[0].indexOf("=")+1));
 			aspectRatio = paramArray[1].substring(paramArray[1].indexOf("=")+1);
@@ -206,6 +219,11 @@ public class Inset_Creator extends DynamicCommand implements Interactive {
 			addFrameToInset = Boolean.parseBoolean(paramArray[4].substring(paramArray[4].indexOf("=")+1));
 			frameWidth = Integer.parseInt(paramArray[5].substring(paramArray[5].indexOf("=")+1));
 			frameColor = new ColorRGB(paramArray[6].substring(paramArray[6].indexOf("=")+1));
+//			if (paramArray.length < 8) {
+//				startScaleBarPlugin = false;
+//			} else {
+//				startScaleBarPlugin = Boolean.parseBoolean(paramArray[7].substring(paramArray[7].indexOf("=")+1));				
+//			}
 			
 			InsetProcessor.magnificationChanged();
 			

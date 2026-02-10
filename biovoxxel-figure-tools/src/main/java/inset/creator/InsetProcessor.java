@@ -1,6 +1,10 @@
 package inset.creator;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.JOptionPane;
 
@@ -9,14 +13,22 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.Macro;
 import ij.WindowManager;
+import ij.gui.Arrow;
+import ij.gui.Line;
 import ij.gui.OvalRoi;
 import ij.gui.Overlay;
+import ij.gui.PointRoi;
+import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import ij.gui.RotatedRectRoi;
 import ij.gui.ShapeRoi;
+import ij.gui.TextRoi;
 import ij.gui.Toolbar;
 import ij.measure.Calibration;
 import ij.plugin.CanvasResizer;
 import ij.plugin.RoiRotator;
+import ij.plugin.RoiScaler;
+import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 
 public class InsetProcessor {
@@ -59,19 +71,31 @@ public class InsetProcessor {
 			int frame = imagePlus.getT();
 			
 			ImagePlus scaledImagePlus = null;
+
+			Overlay finalOverlay;
 			
 			if (Inset_Creator.roiAngle != 0 && !Inset_Creator.aspectRatio.contains("Circle")) {
+				
 				ImagePlus duplicatedInset = imagePlus.crop();
+				//duplicatedInset.duplicate().show(); //test
+						
 				straightenRotatedRect(imagePlus, frameRoi, duplicatedInset);
-				//duplicatedInset.show(); //test
+				
+				finalOverlay = duplicatedInset.getOverlay().duplicate();
+				
 				scaledImagePlus = duplicatedInset.resize(duplicatedInset.getWidth() * Inset_Creator.magnification, duplicatedInset.getHeight() * Inset_Creator.magnification, 1, "none");
+	
 				
 			} else {
-				scaledImagePlus = imagePlus.resize(frameRoi.getBounds().width * Inset_Creator.magnification, frameRoi.getBounds().height * Inset_Creator.magnification, 1, "none");				
+				
+				finalOverlay = imagePlus.getOverlay().duplicate().crop(frameRoi.getBounds());
+				
+				scaledImagePlus = imagePlus.resize(frameRoi.getBounds().width * Inset_Creator.magnification, frameRoi.getBounds().height * Inset_Creator.magnification, 1, "none");
 			}
-			
-			
-			
+			//scaledImagePlus.getOverlay().clear();
+			//scaledImagePlus.updateAndDraw();
+								
+				
 			Roi ovalRoi = null;
 			if (Inset_Creator.aspectRatio.contains("Circle")) {
 				ovalRoi = new OvalRoi(frameWidth/2, frameWidth/2, scaledImagePlus.getWidth()-frameWidth, scaledImagePlus.getHeight()-frameWidth);
@@ -89,20 +113,24 @@ public class InsetProcessor {
 				insetRoi.setStrokeColor(frameColor);
 				insetRoi.setName("|INSET_FRAME|");
 				
-				Overlay insetOverlay = scaledImagePlus.getOverlay();
-				if (insetOverlay == null) {
-					insetOverlay = new Overlay();
-					scaledImagePlus.setOverlay(insetOverlay);
-				}
-				insetOverlay.add(insetRoi);
+//				Overlay insetOverlay = scaledImagePlus.getOverlay();
+//				if (insetOverlay == null) {
+//					insetOverlay = new Overlay();
+//					scaledImagePlus.setOverlay(insetOverlay);
+//				}
+				finalOverlay.add(insetRoi);
 				if (Inset_Creator.aspectRatio.contains("Circle")) {
 					Roi clippingRoi = (Roi)insetRoi.clone();
 					clippingRoi.setName("|CLIP_ROI|");
-					insetOverlay.add(clippingRoi);	//add twice to have a clipping Roi in Inkscape available
+					finalOverlay.add(clippingRoi);	//add twice to have a clipping Roi in Inkscape available
 				}
 				
 				scaledImagePlus.killRoi();
+				
 			}
+
+
+			scaledImagePlus.setOverlay(translate(finalOverlay));
 			
 			String insetTitle = WindowManager.getUniqueName("Inset_" + imagePlus.getTitle());
 			scaledImagePlus.setTitle(insetTitle);
@@ -245,6 +273,7 @@ public class InsetProcessor {
 		
 		ShapeRoi shapeRoi = new ShapeRoi(currentRoi);
 		inputImagePlus.setRoi(shapeRoi);
+		inputImagePlus.updateAndDraw();
 		
 		formerAngle = 0;
 		
@@ -256,9 +285,12 @@ public class InsetProcessor {
 		ImagePlus inputImagePlus = Inset_Creator.inputImage;
 		Roi currentRoi = inputImagePlus.getRoi();
 		
+		
 		if (currentRoi == null) {
+			
 			magnificationChanged();
-		}
+			currentRoi = inputImagePlus.getRoi();
+		} 
 		
 		if (!Inset_Creator.aspectRatio.contains("Circle")) {
 			
@@ -271,27 +303,39 @@ public class InsetProcessor {
 		}
 	}
 	
-	/** Rotates duplicated part of image
-	 * The original code is adapted to use BICUBIC interpolation while rotating the image !!!
-	- impA is original image,
-	- roiA is orig rotatedRect
-	- impB contains duplicated overlapping bounding rectangle	
-	processing steps:
-	- increase canvas of impB before rotation
-	- rotate impB
-	- calculate excentricity
-	- translate to compensate excentricity 
-	- create orthogonal rectangle in center
-	- crop to impC	
-	Author: N. Vischer
-	*/
+	/** Rotates duplicated part of image.
+	 * Code adapted from the original ImageJ code from the Author: N. Vischer
+	 */
 	private static void straightenRotatedRect(ImagePlus impA, Roi roiA, ImagePlus impB) {
+		
+		Overlay oldOverlay = impB.getOverlay().duplicate();
+		//System.out.println(oldOverlay);
+		Overlay rotatedOverlay = oldOverlay.create();
+		
+		
+		for (int i=0; i<oldOverlay.size(); i++) {
+			Roi roi = oldOverlay.get(i);
+			int position = roi.getPosition();
+			
+			if (!(roi instanceof TextRoi)) {
+				roi = rotate(roi, -Inset_Creator.roiAngle, impB.getWidth()/2, impB.getHeight()/2);				
+			}
+
+			roi.setPosition(position);
+			rotatedOverlay.add(roi);
+			
+		}
+		//impB.setOverlay(rotatedOverlay);
+		//System.out.println(rotatedOverlay);
+		
+		//impB.duplicate().show();
+		
 		impB.deleteRoi(); //we have it in roiA
 		Color colorBack = Toolbar.getBackgroundColor();	
 		IJ.setBackgroundColor(0,0,0);
 		String title = impB.getTitle();
-		if(impB.getOverlay() != null)
-			impB.getOverlay().clear();
+//		if(impB.getOverlay() != null)
+//			impB.getOverlay().clear();
 		int boundLeft = roiA.getBounds().x;
 		int boundTop = roiA.getBounds().y;
 		int boundWidth = roiA.getBounds().width;
@@ -329,7 +373,7 @@ public class InsetProcessor {
 		double phi4 = phi3 + phi1;
 		double dx4 = -rad3 * Math.cos(phi4);
 		double dy4 = -rad3 * Math.sin(phi4);
-
+		
 		//Increase canvas to a square large enough for rotation
 		ImageStack stackOld = impB.getStack();
 		int currentSlice = impB.getCurrentSlice();
@@ -338,6 +382,10 @@ public class InsetProcessor {
 
 		ImageStack stackNew = (new CanvasResizer()).expandStack(stackOld, (int) rrDia, (int) rrDia, (int) xOff, (int) yOff);
 		impB.setStack(stackNew);
+	
+		//impB.setOverlay(translatedRotatedOverlay);
+		//impB.duplicate().show(); //test
+		
 		ImageProcessor ip = impB.getProcessor();
 		ip.setInterpolationMethod(ImageProcessor.BICUBIC);
 		ip.setBackgroundValue(0);
@@ -348,12 +396,21 @@ public class InsetProcessor {
 			ip.translate(dx4, dy4); //Translate
 		}
 
+				
+
 		int x = (impB.getWidth() - (int) rrWidth) / 2;
 		int y = (impB.getHeight() - (int) rrHeight) / 2;
 
 		impB.setStack(impB.getStack().crop(x, y, 0, (int) rrWidth, (int) rrHeight, impB.getStack().getSize()));//Crop
 		impB.setSlice(currentSlice);
 		impB.setTitle(title);
+		
+		
+		Overlay translatedRotatedOverlay = rotatedOverlay.duplicate();
+		translatedRotatedOverlay.translate(xOff, yOff);
+		Overlay finalOverlay = translatedRotatedOverlay.crop(new Rectangle(x, y, (int)rrWidth, (int)rrHeight));
+		
+		impB.setOverlay(finalOverlay);
 		//impB.show();
 		//impB.updateAndDraw();
 		impA.setRoi(roiA); //restore rotated rect in source image
@@ -361,11 +418,144 @@ public class InsetProcessor {
 	}	
 	
 	
+	private static Overlay translate(Overlay inputOverlay) {
+		
+		//Overlay inputOverlay = inputImage.getOverlay();
+		Overlay outputOverlay = new Overlay();
+		
+		for (int i=0; i<inputOverlay.size(); i++) {
+			Roi roi = inputOverlay.get(i);
+			
+			int position = roi.getPosition();
+			
+			if (roi.getName() == "|INSET_FRAME|" || roi.getName() == "|CLIP_ROI|") {
+				
+				outputOverlay.add(roi);
+				
+			} else if (roi instanceof Arrow) {		
+				
+				Arrow arrow = ((Arrow)roi);				
+				Arrow newArrow = new Arrow(arrow.x2d * Inset_Creator.magnification + (arrow.x1d - arrow.x2d), arrow.y2d * Inset_Creator.magnification + (arrow.y1d - arrow.y2d), arrow.x2d * Inset_Creator.magnification, arrow.y2d * Inset_Creator.magnification);
+				
+				newArrow.setStrokeColor(arrow.getStrokeColor());
+				newArrow.setStrokeWidth(arrow.getStrokeWidth());
+				newArrow.setHeadSize(arrow.getHeadSize());
+				
+				roi = newArrow;
 	
+				roi.setPosition(position);
+
+				outputOverlay.add(roi);			
+				
+			} else if (roi instanceof TextRoi) {
+				
+				double xBase = roi.getXBase();
+				double yBase = roi.getYBase();
+				
+				roi.setLocation(xBase * Inset_Creator.magnification, yBase * Inset_Creator.magnification);
+				
+				TextRoi currentTextRoi = ((TextRoi) roi);
+				
+				Font textFont = currentTextRoi.getCurrentFont();
+								
+				TextRoi newTextRoi = new TextRoi(xBase * Inset_Creator.magnification + (currentTextRoi.getBounds().width * (Inset_Creator.magnification-1)), (yBase * Inset_Creator.magnification) - (textFont.getSize() * (Inset_Creator.magnification-1)), ((TextRoi) roi).getText(), currentTextRoi.getCurrentFont());
+				newTextRoi.setStrokeColor(currentTextRoi.getStrokeColor());
+				
+				roi = newTextRoi;
+				
+				roi.setPosition(position);
+
+				outputOverlay.add(roi);		
+				
+			} else {
+				
+				Roi roi_scaled = RoiScaler.scale(roi, Inset_Creator.magnification, Inset_Creator.magnification, false);
+				roi_scaled.setStrokeWidth(roi.getStrokeWidth());
+				outputOverlay.add(roi_scaled);
+				
+			}
+			
+		}
+		
+		return outputOverlay;
+	}
+	
+	
+	public static Roi rotate(Roi roi, double angle, double xcenter, double ycenter) {
+		
+		double theta = -angle*Math.PI/180.0;
+		if (roi instanceof ShapeRoi)
+			return rotateShape((ShapeRoi)roi, -theta, xcenter, ycenter);
+		FloatPolygon poly = roi.getFloatPolygon();
+		int type = roi.getType();
+		boolean rotatedRect = roi instanceof RotatedRectRoi;
+		double rotatedRectWidth = 0;
+		if (type==Roi.LINE) {
+			Line line = (Line)roi;
+			double x1=line.x1d;
+			double y1=line.y1d;
+			double x2=line.x2d;
+			double y2=line.y2d;
+			poly = new FloatPolygon();
+			poly.addPoint(x1, y1);
+			poly.addPoint(x2, y2);
+		} else if (rotatedRect) {
+			double[] p = ((RotatedRectRoi)roi).getParams();
+			poly = new FloatPolygon();
+			poly.addPoint(p[0], p[1]);
+			poly.addPoint(p[2], p[3]);
+			rotatedRectWidth = p[4];
+		}
+		for (int i=0; i<poly.npoints; i++) {
+			double dx = poly.xpoints[i]-xcenter;
+			double dy = ycenter-poly.ypoints[i];
+			double radius = Math.sqrt(dx*dx+dy*dy);
+			double a = Math.atan2(dy, dx);
+			poly.xpoints[i] = (float)(xcenter + radius*Math.cos(a+theta));
+			poly.ypoints[i] = (float)(ycenter - radius*Math.sin(a+theta));
+		}
+		Roi roi2 = null;
+		if (type==Roi.LINE) {
+			
+			//the following distinction is missing in IJ's RoiRotator and destroys arrows
+			if (roi instanceof Arrow) {
+				roi2 = new Arrow(poly.xpoints[0], poly.ypoints[0], poly.xpoints[1], poly.ypoints[1]);
+			} else {
+				roi2 = new Line(poly.xpoints[0], poly.ypoints[0], poly.xpoints[1], poly.ypoints[1]);				
+			}
+		}
+		else if (rotatedRect)
+			roi2 = new RotatedRectRoi(poly.xpoints[0], poly.ypoints[0], poly.xpoints[1], poly.ypoints[1], rotatedRectWidth);
+		else if (type==Roi.POINT)
+			roi2 = new PointRoi(poly.xpoints, poly.ypoints,poly.npoints);
+		else {
+			if (type==Roi.RECTANGLE)
+				type = Roi.POLYGON;
+			if (type==Roi.RECTANGLE && poly.npoints>4) // rounded rectangle
+				type = Roi.FREEROI;
+			if (type==Roi.OVAL||type==Roi.TRACED_ROI)
+				type = Roi.FREEROI;
+			roi2 = new PolygonRoi(poly.xpoints, poly.ypoints,poly.npoints, type);
+		}
+		roi2.copyAttributes(roi);
+		return roi2;
+	
+	}
+	
+	private static Roi rotateShape(ShapeRoi roi, double angle, double xcenter, double ycenter) {
+		Shape shape = roi.getShape();
+		AffineTransform at = new AffineTransform();
+		at.rotate(angle, xcenter, ycenter);
+		Rectangle r = roi.getBounds();
+		at.translate(r.x, r.y);
+		Shape shape2 = at.createTransformedShape(shape);
+		Roi roi2 = new ShapeRoi(shape2);
+		roi2.copyAttributes(roi);
+		return roi2;
+	}
+
+
 }
-
-
-
 
 
 
