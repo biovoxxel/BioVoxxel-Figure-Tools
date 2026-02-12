@@ -331,6 +331,7 @@ public class SVG_Object_Factory {
 		
 		boolean[] activeChannels = ((CompositeImage)composite).getActiveChannels();
 		
+				
 		for (int channel = composite.getNChannels(); channel >= 1; channel--) {
 			
 			composite.setC(channel);
@@ -359,7 +360,13 @@ public class SVG_Object_Factory {
 				styleAttribute += "none;";
 			}
 			
-			image.setAttributeNS(svgNS, SVGSyntax.SVG_STYLE_ATTRIBUTE, styleAttribute + "mix-blend-mode:screen;");
+			
+			if (composite.isInvertedLut()) {
+				image.setAttributeNS(svgNS, SVGSyntax.SVG_STYLE_ATTRIBUTE, styleAttribute + "mix-blend-mode:darken;");
+			} else {
+				image.setAttributeNS(svgNS, SVGSyntax.SVG_STYLE_ATTRIBUTE, styleAttribute + "mix-blend-mode:screen;");
+			}
+			
 			
 			Element objectDescription = doc.createElementNS(svgNS, SVGSyntax.SVG_DESC_TAG);
 			objectDescription.setTextContent(new ImageInfo().getImageInfo(composite));
@@ -385,7 +392,12 @@ public class SVG_Object_Factory {
 			
 			compositeGroup.setAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE, "image-group-" + random_number);
 			
-			Element script = createChannelSwapScript(random_number);
+			String blendMode = "screen";
+			if (composite.isInvertedLut()) {
+				blendMode = "darken";
+			}
+			
+			Element script = createChannelSwapScript(random_number, blendMode);
 			compositeGroup.appendChild(script);
 		}
 		
@@ -791,67 +803,67 @@ public class SVG_Object_Factory {
 		
 	}
 	
-	public Element createChannelSwapScript(long id) {
+	public Element createChannelSwapScript(long id, String blendMode) {
 		Element script = doc.createElementNS(svgNS, SVGSyntax.SVG_SCRIPT_TAG);
 		
 		script.setAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE, "channelswitch");
 		script.setAttributeNS(svgNS, SVGSyntax.SVG_TYPE_ATTRIBUTE, "text/javascript");
 		
 		Text scriptText = doc.createCDATASection(""
-				+ "        // Function to handle image combinations\r\n"
-				+ "        function initializeImageCycle() {\r\n"
-				+ "            const images = Array.from(document.querySelectorAll('#image-group-" + id + " image'));\r\n"
-				+ "            const totalImages = images.length;\r\n"
-				+ "            let currentCombinationIndex = -1;\r\n"
-				+ "\r\n"
-				+ "            // Generate all unique pairs of image indices\r\n"
-				+ "            const combinations = [];\r\n"
-				+ "            for (let i = 0; i < totalImages; i++) {\r\n"
-				+ "                for (let j = i + 1; j < totalImages; j++) {\r\n"
-				+ "                    combinations.push([i, j]);\r\n"
-				+ "                }\r\n"
-				+ "            }\r\n"
-				+ "\r\n"
-				+ "            // Function to apply the screen blending mode\r\n"
-				+ "            function showCombination(index) {\r\n"
-				+ "                // Reset all images to normal blend mode and hide them\r\n"
-				+ "                images.forEach(img => {\r\n"
-				+ "                    img.setAttribute('style', 'display: none; mix-blend-mode: normal; position: absolute;');\r\n"
-				+ "                });\r\n"
-				+ "\r\n"
-				+ "                // If showing all merged (index === -1)\r\n"
-				+ "                if (index === -1) {\r\n"
-				+ "                    images.forEach(img => {\r\n"
-				+ "                        img.setAttribute('style', 'display: block; mix-blend-mode: screen; position: absolute;');\r\n"
-				+ "                    });\r\n"
-				+ "                    return;\r\n"
-				+ "                }\r\n"
-				+ "\r\n"
-				+ "                // Get the pair for the current index\r\n"
-				+ "                const [first, second] = combinations[index];\r\n"
-				+ "                images[first].setAttribute('style', 'display: block; mix-blend-mode: screen; position: absolute;');\r\n"
-				+ "                images[second].setAttribute('style', 'display: block; mix-blend-mode: screen; position: absolute;');\r\n"
-				+ "            }\r\n"
-				+ "\r\n"
-				+ "            // Event listener to cycle through combinations\r\n"
-				+ "            document.getElementById('image-group-" + id + "').addEventListener('click', () => {\r\n"
-				+ "                currentCombinationIndex++;\r\n"
-				+ "\r\n"
-				+ "                if (currentCombinationIndex >= combinations.length) {\r\n"
-				+ "                    currentCombinationIndex = -1; // Reset to show all merged\r\n"
-				+ "                }\r\n"
-				+ "\r\n"
-				+ "                showCombination(currentCombinationIndex);\r\n"
-				+ "            });\r\n"
-				+ "\r\n"
-				+ "            // Initialize with all images merged\r\n"
-				+ "            showCombination(-1);\r\n"
-				+ "        }\r\n"
-				+ "\r\n"
-				+ "        // Call the function to set up the cycle\r\n"
-				+ "        initializeImageCycle();\r\n"
-		);
-		
+					+ "        // Function to handle image combinations\r\n"
+					+ "        function initializeImageCycle() {\r\n"
+					+ "            const images = Array.from(document.querySelectorAll('#image-group-" + id + " image'));\r\n"
+					+ "            const totalImages = images.length;\r\n"
+					+ "            let currentCombinationIndex = -1;\r\n"
+					+ "\r\n"
+					+ "            // Generate all unique pairs of image indices\r\n"
+					+ "            const combinations = [];\r\n"
+					+ "            for (let i = 0; i < totalImages; i++) {\r\n"
+					+ "                for (let j = i + 1; j < totalImages; j++) {\r\n"
+					+ "                    combinations.push([i, j]);\r\n"
+					+ "                }\r\n"
+					+ "            }\r\n"
+					+ "\r\n"
+					+ "            // Function to apply the screen blending mode\r\n"
+					+ "            function showCombination(index) {\r\n"
+					+ "                // Reset all images to normal blend mode and hide them\r\n"
+					+ "                images.forEach(img => {\r\n"
+					+ "                    img.setAttribute('style', 'display: none; mix-blend-mode: normal; position: absolute;');\r\n"
+					+ "                });\r\n"
+					+ "\r\n"
+					+ "                // If showing all merged (index === -1)\r\n"
+					+ "                if (index === -1) {\r\n"
+					+ "                    images.forEach(img => {\r\n"
+					+ "                        img.setAttribute('style', 'display: block; mix-blend-mode: " + blendMode + "; position: absolute;');\r\n"
+					+ "                    });\r\n"
+					+ "                    return;\r\n"
+					+ "                }\r\n"
+					+ "\r\n"
+					+ "                // Get the pair for the current index\r\n"
+					+ "                const [first, second] = combinations[index];\r\n"
+					+ "                images[first].setAttribute('style', 'display: block; mix-blend-mode: " + blendMode + "; position: absolute;');\r\n"
+					+ "                images[second].setAttribute('style', 'display: block; mix-blend-mode: " + blendMode + "; position: absolute;');\r\n"
+					+ "            }\r\n"
+					+ "\r\n"
+					+ "            // Event listener to cycle through combinations\r\n"
+					+ "            document.getElementById('image-group-" + id + "').addEventListener('click', () => {\r\n"
+					+ "                currentCombinationIndex++;\r\n"
+					+ "\r\n"
+					+ "                if (currentCombinationIndex >= combinations.length) {\r\n"
+					+ "                    currentCombinationIndex = -1; // Reset to show all merged\r\n"
+					+ "                }\r\n"
+					+ "\r\n"
+					+ "                showCombination(currentCombinationIndex);\r\n"
+					+ "            });\r\n"
+					+ "\r\n"
+					+ "            // Initialize with all images merged\r\n"
+					+ "            showCombination(-1);\r\n"
+					+ "        }\r\n"
+					+ "\r\n"
+					+ "        // Call the function to set up the cycle\r\n"
+					+ "        initializeImageCycle();\r\n"
+					);
+				
 		script.appendChild(scriptText);
 		
 		return script;
