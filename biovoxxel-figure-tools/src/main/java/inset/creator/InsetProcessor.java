@@ -94,56 +94,14 @@ public class InsetProcessor {
 			}
 			//scaledImagePlus.getOverlay().clear();
 			//scaledImagePlus.updateAndDraw();
-								
 				
-			Roi ovalRoi = null;
-			if (Inset_Creator.aspectRatio.contains("Circle")) {
-				ovalRoi = new OvalRoi(frameWidth/2, frameWidth/2, scaledImagePlus.getWidth()-frameWidth, scaledImagePlus.getHeight()-frameWidth);
-			}
 			
-			if (Inset_Creator.addFrameToInset) {
-				Roi insetRoi = null;
-				if (Inset_Creator.aspectRatio.contains("Circle")) {
-					insetRoi = ovalRoi;
-				} else {
-					insetRoi = new Roi(frameWidth/2, frameWidth/2, scaledImagePlus.getWidth()-frameWidth, scaledImagePlus.getHeight()-frameWidth);
-					
-				}
-				insetRoi.setStrokeWidth(Inset_Creator.frameWidth);
-				insetRoi.setStrokeColor(frameColor);
-				insetRoi.setName("|INSET_FRAME|");
-				
-//				Overlay insetOverlay = scaledImagePlus.getOverlay();
-//				if (insetOverlay == null) {
-//					insetOverlay = new Overlay();
-//					scaledImagePlus.setOverlay(insetOverlay);
-//				}
-				finalOverlay.add(insetRoi);
-				if (Inset_Creator.aspectRatio.contains("Circle")) {
-					Roi clippingRoi = (Roi)insetRoi.clone();
-					clippingRoi.setName("|CLIP_ROI|");
-					finalOverlay.add(clippingRoi);	//add twice to have a clipping Roi in Inkscape available
-				}
-				
-				scaledImagePlus.killRoi();
-				
-			}
-
-
-			scaledImagePlus.setOverlay(translate(finalOverlay));
-			
-			String insetTitle = WindowManager.getUniqueName("Inset_" + imagePlus.getTitle());
-			scaledImagePlus.setTitle(insetTitle);
-			
-			Calibration imageCalibration = imagePlus.getCalibration();
-			Calibration insetCalibration = imageCalibration.copy();
-			
-			insetCalibration.pixelWidth = imageCalibration.pixelWidth / Inset_Creator.magnification;
-			insetCalibration.pixelHeight = imageCalibration.pixelHeight / Inset_Creator.magnification;
-			
+			//add inset ROI to original image
 			if (Inset_Creator.addFrame) {
 				if (Inset_Creator.aspectRatio.contains("Circle")) {
 					frameRoi = new OvalRoi(frameRoi.getBounds().x, frameRoi.getBounds().y, frameRoi.getBounds().width, frameRoi.getBounds().height);
+				} else {
+					frameRoi = new Roi(frameRoi.getBounds().x, frameRoi.getBounds().y, frameRoi.getBounds().width, frameRoi.getBounds().height);
 				}
 				frameRoi.setStrokeWidth(Inset_Creator.frameWidth);
 				frameRoi.setStrokeColor(frameColor);
@@ -158,6 +116,52 @@ public class InsetProcessor {
 				imagePlus.killRoi();
 				
 			}
+			
+			
+			//add inset Roi to inset overlay
+			if (Inset_Creator.addFrameToInset) {
+				Roi insetRoi = null;
+				if (Inset_Creator.aspectRatio.contains("Circle")) {
+					insetRoi = new OvalRoi(frameWidth/2, frameWidth/2, scaledImagePlus.getWidth()-frameWidth, scaledImagePlus.getHeight()-frameWidth);
+				} else {
+					insetRoi = new Roi(frameWidth/2, frameWidth/2, scaledImagePlus.getWidth()-frameWidth, scaledImagePlus.getHeight()-frameWidth);
+				}
+			
+				insetRoi.setStrokeWidth(Inset_Creator.frameWidth);
+				insetRoi.setStrokeColor(frameColor);
+				insetRoi.setName("|INSET_FRAME|");
+				
+				finalOverlay.add(insetRoi);
+
+				scaledImagePlus.killRoi();
+			}
+
+			//add the final overlay in a upscaled manner to the inset image
+			scaledImagePlus.setOverlay(translate(finalOverlay));
+			
+			//set a clipping Roi to cut off ROIs outside the image area and image areas outside a circular inset ROI
+			Roi clippingRoi = null;
+			if (Inset_Creator.aspectRatio.contains("Circle")) {
+				clippingRoi = new OvalRoi(0, 0, scaledImagePlus.getWidth(), scaledImagePlus.getHeight());
+			} else {
+				clippingRoi = new Roi(0, 0, scaledImagePlus.getWidth(), scaledImagePlus.getHeight());
+			}
+			clippingRoi.setStrokeWidth(Inset_Creator.frameWidth);
+			clippingRoi.setStrokeColor(frameColor);
+			clippingRoi.setName("|CLIP_ROI|");
+			scaledImagePlus.getOverlay().add(clippingRoi);	//add twice to have a clipping Roi in Inkscape available
+			
+			
+			String insetTitle = WindowManager.getUniqueName("Inset_" + imagePlus.getTitle());
+			scaledImagePlus.setTitle(insetTitle);
+			
+			Calibration imageCalibration = imagePlus.getCalibration();
+			Calibration insetCalibration = imageCalibration.copy();
+			
+			insetCalibration.pixelWidth = imageCalibration.pixelWidth / Inset_Creator.magnification;
+			insetCalibration.pixelHeight = imageCalibration.pixelHeight / Inset_Creator.magnification;
+			
+			
 						
 			scaledImagePlus.setCalibration(insetCalibration);
 			
@@ -173,14 +177,6 @@ public class InsetProcessor {
 			JOptionPane.showMessageDialog(null, "No open image detected");
 		}
 	}
-
-	
-//	private static boolean isCalibrated(ImagePlus imagePlus) {
-//		
-//		System.out.println(imagePlus.getTitle() + " is spatially calibrated: " + imagePlus.getCalibration().scaled());
-//		return imagePlus.getCalibration().scaled();
-//		
-//	}
 
 
 	private static void doSetup() {

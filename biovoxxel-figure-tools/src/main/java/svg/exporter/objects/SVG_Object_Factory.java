@@ -254,7 +254,7 @@ public class SVG_Object_Factory {
 			if (roiName != null && roiName.equalsIgnoreCase("|CLIP_ROI|")) {
 				String clipPathId = addClipPathToDocument(object);
 				System.out.println("clipPathId = " + clipPathId);
-				image.setAttributeNS(svgNS, SVGSyntax.SVG_CLIP_PATH_ATTRIBUTE, "url(#" + clipPathId + ")");
+				group.setAttributeNS(svgNS, SVGSyntax.SVG_CLIP_PATH_ATTRIBUTE, "url(#" + clipPathId + ")");
 				
 			} else {
 				System.out.println("appending " + object + System.lineSeparator());
