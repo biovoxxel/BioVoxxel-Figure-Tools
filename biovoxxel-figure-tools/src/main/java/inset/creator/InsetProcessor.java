@@ -100,7 +100,7 @@ public class InsetProcessor {
 			if (Inset_Creator.addFrame) {
 				if (Inset_Creator.aspectRatio.contains("Circle")) {
 					frameRoi = new OvalRoi(frameRoi.getBounds().x, frameRoi.getBounds().y, frameRoi.getBounds().width, frameRoi.getBounds().height);
-				} else {
+				} else if (Inset_Creator.roiAngle == 0) {
 					frameRoi = new Roi(frameRoi.getBounds().x, frameRoi.getBounds().y, frameRoi.getBounds().width, frameRoi.getBounds().height);
 				}
 				frameRoi.setStrokeWidth(Inset_Creator.frameWidth);
