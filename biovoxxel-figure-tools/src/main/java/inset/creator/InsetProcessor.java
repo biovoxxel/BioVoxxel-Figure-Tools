@@ -122,9 +122,9 @@ public class InsetProcessor {
 			if (Inset_Creator.addFrameToInset) {
 				Roi insetRoi = null;
 				if (Inset_Creator.aspectRatio.contains("Circle")) {
-					insetRoi = new OvalRoi(frameWidth/2, frameWidth/2, scaledImagePlus.getWidth()-frameWidth, scaledImagePlus.getHeight()-frameWidth);
+					insetRoi = new OvalRoi(frameWidth/2, frameWidth/2, scaledImagePlus.getWidth()-(frameWidth+1), scaledImagePlus.getHeight()-(frameWidth+1));
 				} else {
-					insetRoi = new Roi(frameWidth/2, frameWidth/2, scaledImagePlus.getWidth()-frameWidth, scaledImagePlus.getHeight()-frameWidth);
+					insetRoi = new Roi(frameWidth/2, frameWidth/2, scaledImagePlus.getWidth()-(frameWidth+1), scaledImagePlus.getHeight()-(frameWidth+1));
 				}
 			
 				insetRoi.setStrokeWidth(Inset_Creator.frameWidth);
@@ -142,9 +142,9 @@ public class InsetProcessor {
 			//set a clipping Roi to cut off ROIs outside the image area and image areas outside a circular inset ROI
 			Roi clippingRoi = null;
 			if (Inset_Creator.aspectRatio.contains("Circle")) {
-				clippingRoi = new OvalRoi(0, 0, scaledImagePlus.getWidth(), scaledImagePlus.getHeight());
+				clippingRoi = new OvalRoi(0, 0, scaledImagePlus.getWidth()-1, scaledImagePlus.getHeight()-1);
 			} else {
-				clippingRoi = new Roi(0, 0, scaledImagePlus.getWidth(), scaledImagePlus.getHeight());
+				clippingRoi = new Roi(0, 0, scaledImagePlus.getWidth()-1, scaledImagePlus.getHeight()-1);
 			}
 			clippingRoi.setStrokeWidth(Inset_Creator.frameWidth);
 			clippingRoi.setStrokeColor(frameColor);
