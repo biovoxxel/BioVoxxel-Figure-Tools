@@ -15,6 +15,10 @@ Run: _>Help >Update..._ and activate the **BioVoxxel Figure Tools** update site 
 
 The *BioVoxxel Figure Tools* come with a convenience menu which can be retreived from the `More >>` tools icon.
 
+## Citation
+Cite the newest version of the BioVoxxel Figure Tools using [https://doi.org/10.5281/zenodo.7268127](https://doi.org/10.5281/zenodo.7268127)
+
+Older versions are listed on Zenodo.
 
 ## Functions
 
