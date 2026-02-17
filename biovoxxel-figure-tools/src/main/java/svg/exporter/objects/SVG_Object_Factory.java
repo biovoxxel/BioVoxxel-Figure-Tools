@@ -194,14 +194,14 @@ public class SVG_Object_Factory {
 		ImageConverter.setDoScaling(true);
 		if (imp.isComposite() && !keepComposite) {
 			
-			System.out.println("Converting image to RGB");
+//			System.out.println("Converting image to RGB");
 			ic.convertToRGB();				
 			
 		} else if (imp.getBitDepth() != 8 && imp.getBitDepth() != 24 && !keepComposite)  {
-			System.out.println("Converting image to 8-bit grayscale");
+//			System.out.println("Converting image to 8-bit grayscale");
 			ic.convertToGray8();
 		} else {
-			System.out.println("Keep composite");
+//			System.out.println("Keep composite");
 		}
 		
 				
@@ -253,11 +253,11 @@ public class SVG_Object_Factory {
 
 			if (roiName != null && roiName.equalsIgnoreCase("|CLIP_ROI|")) {
 				String clipPathId = addClipPathToDocument(object);
-				System.out.println("clipPathId = " + clipPathId);
+//				System.out.println("clipPathId = " + clipPathId);
 				group.setAttributeNS(svgNS, SVGSyntax.SVG_CLIP_PATH_ATTRIBUTE, "url(#" + clipPathId + ")");
 				
 			} else {
-				System.out.println("appending " + object + System.lineSeparator());
+//				System.out.println("appending " + object + System.lineSeparator());
 				group.appendChild(object);
 			}
 			
@@ -269,7 +269,7 @@ public class SVG_Object_Factory {
 	
 	
 	public static String addClipPathToDocument(Element clipObject) {
-		System.out.println("adding clipping path" + System.lineSeparator());
+//		System.out.println("adding clipping path" + System.lineSeparator());
 		Element clipDef = doc.createElementNS(svgNS, SVGSyntax.SVG_DEFS_TAG);
 		svgRoot.appendChild(clipDef);
 		
@@ -291,7 +291,7 @@ public class SVG_Object_Factory {
 	 */
 	public Element createImage(ImagePlus imp, boolean embed) {
 		
-		System.out.println("Creating RGB SVG");
+		//System.out.println("Creating RGB SVG");
 		
 		Element image = doc.createElementNS(svgNS, SVGSyntax.SVG_IMAGE_TAG);
 		
@@ -323,11 +323,11 @@ public class SVG_Object_Factory {
 	
 	public Element createComposite(ImagePlus composite, boolean embed, boolean makeInteractive) {
 
-		System.out.println("Creating composite SVG");
+//		System.out.println("Creating composite SVG");
 		
 		Element compositeGroup = doc.createElementNS(svgNS, SVGSyntax.SVG_G_TAG);
 		
-		System.out.println("Composite channels = " + composite.getNChannels());
+//		System.out.println("Composite channels = " + composite.getNChannels());
 		
 		boolean[] activeChannels = ((CompositeImage)composite).getActiveChannels();
 		
@@ -336,7 +336,7 @@ public class SVG_Object_Factory {
 			
 			composite.setC(channel);
 			String fileName = "C" + channel + "-" + composite.getTitle();
-			System.out.println("Processing composite channel " + fileName);
+//			System.out.println("Processing composite channel " + fileName);
 			ImagePlus currentChannel = new ImagePlus(fileName, composite.getProcessor().duplicate());
 						
 			ImageConverter ic = new ImageConverter(currentChannel);
@@ -386,7 +386,7 @@ public class SVG_Object_Factory {
 		}
 		
 		if (makeInteractive) {
-			System.out.println("Making composite SVG interactive");
+//			System.out.println("Making composite SVG interactive");
 			
 			long random_number = Math.round(Math.random()*1000);
 			
@@ -472,7 +472,7 @@ public class SVG_Object_Factory {
 		}
 		
 		
-		System.out.println(shapeObject + " created from " + roi);
+//		System.out.println(shapeObject + " created from " + roi);
 		
 		return shapeObject;
 	}
@@ -499,12 +499,12 @@ public class SVG_Object_Factory {
 						individualRois[s].setFillColor(roi.getFillColor());
 						
 						roiVector.add(individualRois[s]);
-						System.out.println(individualRois[s] + " added");
+//						System.out.println(individualRois[s] + " added");
 					}
 					
 				} else {
 					roiVector.add(roi);
-					System.out.println(roi + " added");
+//					System.out.println(roi + " added");
 				}
 			}
 		}
@@ -620,7 +620,7 @@ public class SVG_Object_Factory {
 			
 			
 			if (((ij.gui.Arrow) pathRoi).getDoubleHeaded()) {
-				System.out.println("Path is double headed");
+//				System.out.println("Path is double headed");
 				
 				path.setAttributeNS(svgNS, SVGSyntax.SVG_STYLE_ATTRIBUTE, SVGSyntax.CSS_MARKER_START_PROPERTY + ":url(#Arrow2);"
 																		+ SVGSyntax.CSS_MARKER_END_PROPERTY + ":url(#Arrow2)");
@@ -636,7 +636,7 @@ public class SVG_Object_Factory {
 
 
 	private void addMarkerToDocument() {
-		System.out.println("Adding arrow marker to document");
+//		System.out.println("Adding arrow marker to document");
 		
 		Element arrowDefs = doc.createElementNS(svgNS, SVGSyntax.SVG_DEFS_TAG);
 		
@@ -670,16 +670,16 @@ public class SVG_Object_Factory {
 		String textAsString = textRoi.getText().trim();
 
 		Font currentFont = textRoi.getCurrentFont();
-		System.out.println("Font = " + currentFont);
+//		System.out.println("Font = " + currentFont);
 		int fontSize = currentFont.getSize();
-		//System.out.println(fontSize);
+//		System.out.println(fontSize);
 		int fontStyle = currentFont.getStyle();
-		//System.out.println(fontStyle);
+//		System.out.println(fontStyle);
 		String fontFamily = currentFont.getFamily();
 		if (fontFamily.equalsIgnoreCase("SansSerif") || fontFamily.equalsIgnoreCase("Dialog")) {
 			fontFamily = "Arial";
 		} 
-		//System.out.println(fontFamily);
+//		System.out.println(fontFamily);
 		
 		
 				
@@ -689,12 +689,27 @@ public class SVG_Object_Factory {
 			
 		double roiAngle = textRoi.getAngle();
 		
+		double x = (double) roi.getBounds().x;
+		double y = (double) roi.getBounds().y + roi.getBounds().height * 0.6667;
+		
+		System.out.println(roi);
+		System.out.println(x);
+		System.out.println(y);
+		
 		
 		Element text = doc.createElementNS(svgNS, SVGSyntax.SVG_TEXT_TAG);
-		
-		text.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + (double) roi.getBounds().x);
-		text.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + ((double) roi.getBounds().y + (double) roi.getBounds().height - (double)roi.getBounds().height * 0.3));
-		text.setAttributeNS(svgNS, SVGSyntax.SVG_TRANSFORM_ATTRIBUTE, "rotate(" + -roiAngle + ")");
+
+		text.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + x);
+		text.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + y);			
+//		if (roiAngle == 90) {
+//		} else if (roiAngle == -90) {
+//			text.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + (x - fontSize));
+//			text.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + (y - fontSize));	
+//		} else {
+//			text.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + x);
+//			text.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + y);	
+//		}
+		text.setAttributeNS(svgNS, SVGSyntax.SVG_TRANSFORM_ATTRIBUTE, "rotate(" + -roiAngle + " " + roi.getBounds().x + " " + roi.getBounds().y + ")");
 		text.setAttributeNS(svgNS, SVGSyntax.CSS_LETTER_SPACING_PROPERTY, "0px");
 		text.setAttributeNS(svgNS, SVGSyntax.CSS_WORD_SPACING_PROPERTY, "0px");
 		text.setAttributeNS(svgNS, SVGSyntax.CSS_STROKE_WIDTH_PROPERTY, "0px");
@@ -702,7 +717,6 @@ public class SVG_Object_Factory {
 		text.setAttributeNS(svgNS, SVGSyntax.CSS_FONT_SIZE_PROPERTY, "" + fontSize);
 		text.setAttributeNS(svgNS, SVGSyntax.CSS_FILL_VALUE, "#" + Integer.toHexString(textColor.getRGB()).substring(2));
 		text.setAttributeNS(svgNS, SVGSyntax.CSS_FILL_OPACITY_PROPERTY, "" + textOpacity);
-		text.setAttributeNS(svgNS, SVGSyntax.SVG_TRANSFORM_ATTRIBUTE, "");
 		
 		
 		switch (fontStyle) {
@@ -731,8 +745,20 @@ public class SVG_Object_Factory {
 		}
 		
 		Element tspan = doc.createElementNS(svgNS, SVGSyntax.SVG_TSPAN_TAG);
-		tspan.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + (double) roi.getBounds().x);
-		tspan.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + ((double) roi.getBounds().y + (double) roi.getBounds().height - (double)roi.getBounds().height * 0.3));
+		
+		tspan.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + x);
+		tspan.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + y);
+		
+		
+		
+//		if (roiAngle == 90) {
+//		} else if (roiAngle == -90) {
+//			tspan.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + (x - fontSize));
+//			tspan.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + (y - fontSize));
+//		} else {
+//			tspan.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + y);
+//			tspan.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + x);
+//		}
 		tspan.setTextContent(textAsString);
 		
 		text.appendChild(tspan);
