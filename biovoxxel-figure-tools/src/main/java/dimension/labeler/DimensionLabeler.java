@@ -45,8 +45,8 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 	@Parameter (label = "Step", callback = "updatePreview")
 	Integer stamperStep = 1;
 	
-	@Parameter (label = "Format", choices = {"#0", "00:00", "00:00:00", "Text"}, callback = "updatePreview", description = ""
-			+ "If Text is chosen, only the fields Prefix and Suffix are used and combined")
+	@Parameter (label = "Format", choices = {"#0", "00:00", "00:00:00", "Text", "ABC", "abc"}, callback = "updatePreview", description = ""
+			+ "If Text is chosen, only the fields Prefix and Suffix are used and combined. For ABC/abc start and step have to be positive.")
 	String stamperFormat = "00:00";	
 	
 	@Parameter (label = "Prefix", callback = "updatePreview")
@@ -62,10 +62,10 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 	String fontStyle = "Normal";
 	
 	@Parameter (label = "Font size", min = "1", callback="updatePreview")
-	Integer fontSize = 12;
+	Integer fontSize = 30;
 	
 	@Parameter (label = "X location", min = "0", callback = "updatePreview")
-	Integer xStart = 10;
+	Integer xStart = 15;
 	
 	@Parameter (label = "Y location", min = "0", callback = "updatePreview")
 	Integer yStart = 10;
@@ -113,6 +113,7 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 		mutableFontType.setChoices(fontList);
 		
 	}
+	
 	
 	
 	private Font getFont() {
@@ -274,6 +275,14 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 		case "Text":
 			str = "";
 			break;
+			
+		case "ABC":
+			str = numberToLetters('A', counter);
+			break;
+		
+		case "abc":
+			str = numberToLetters('a', counter);
+			break;
 
 		default:
 			break;
@@ -319,6 +328,22 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 		prefs.put(getClass(), "backgroundColor", backgroundColor.toString());
 	}
 	
+	public String numberToLetters(char c, int i) {
+        if (i <= 0) {
+            i = 1;
+        }
+
+        // Adjust for 1-based indexing
+        i--;
+
+        // Base case
+        if (i < 26) {
+            return String.valueOf((char) (c + i));
+        }
+
+        // Recursive case
+        return numberToLetters(c, i / 26) + (char) (c + (i % 26));
+    }
 
 }
 
