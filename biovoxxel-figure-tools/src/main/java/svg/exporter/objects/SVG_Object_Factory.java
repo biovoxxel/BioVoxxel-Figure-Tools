@@ -434,7 +434,7 @@ public class SVG_Object_Factory {
 				setGeneralObjectAttributes(roi, shapeObject);
 				break;
 				
-			case Roi.POLYGON: case Roi.FREEROI: case Roi.FREELINE: case Roi.POLYLINE: case Roi.ANGLE: case Roi.LINE: case Roi.TRACED_ROI:
+			case Roi.POLYGON: case Roi.FREEROI: case Roi.FREELINE: case Roi.POLYLINE: case Roi.ANGLE: case Roi.LINE: case Roi.TRACED_ROI: case Roi.COMPOSITE:
 				shapeObject = createPath(roi);
 				setGeneralObjectAttributes(roi, shapeObject);
 				break;
@@ -701,14 +701,7 @@ public class SVG_Object_Factory {
 
 		text.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + x);
 		text.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + y);			
-//		if (roiAngle == 90) {
-//		} else if (roiAngle == -90) {
-//			text.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + (x - fontSize));
-//			text.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + (y - fontSize));	
-//		} else {
-//			text.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + x);
-//			text.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + y);	
-//		}
+
 		text.setAttributeNS(svgNS, SVGSyntax.SVG_TRANSFORM_ATTRIBUTE, "rotate(" + -roiAngle + " " + roi.getBounds().x + " " + roi.getBounds().y + ")");
 		text.setAttributeNS(svgNS, SVGSyntax.CSS_LETTER_SPACING_PROPERTY, "0px");
 		text.setAttributeNS(svgNS, SVGSyntax.CSS_WORD_SPACING_PROPERTY, "0px");
@@ -748,17 +741,6 @@ public class SVG_Object_Factory {
 		
 		tspan.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + x);
 		tspan.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + y);
-		
-		
-		
-//		if (roiAngle == 90) {
-//		} else if (roiAngle == -90) {
-//			tspan.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + (x - fontSize));
-//			tspan.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + (y - fontSize));
-//		} else {
-//			tspan.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + y);
-//			tspan.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + x);
-//		}
 		tspan.setTextContent(textAsString);
 		
 		text.appendChild(tspan);
