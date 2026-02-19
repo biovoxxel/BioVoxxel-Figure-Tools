@@ -130,7 +130,6 @@ public class SvgUtilities {
 	public static Roi interpolateRoi(Roi roi, double interpolationInterval, boolean smooth) {
 		
 		int roiType = roi.getType();
-		System.out.println("roiType = " + roiType);
 		
 		PolygonRoi interpolatedPolygonRoi = null;
 		
@@ -154,6 +153,7 @@ public class SvgUtilities {
 			interpolatedPolygonRoi.setFillColor(roi.getFillColor());
 			interpolatedPolygonRoi.setStrokeColor(roi.getStrokeColor());
 			interpolatedPolygonRoi.setStrokeWidth(roi.getStrokeWidth());
+			interpolatedPolygonRoi.setName(roi.getName());
 		
 			return interpolatedPolygonRoi;
 			

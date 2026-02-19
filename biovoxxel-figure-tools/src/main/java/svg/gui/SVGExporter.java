@@ -46,7 +46,7 @@ public class SVGExporter extends DynamicCommand {
 	@Parameter(label = "Export also non-visible channels")
 	Boolean exportAlsoNonVisibleChannels = false;
 	
-	@Parameter(label = "Interpolate ROIs", min = "0.0", persist = true, description = "if 0.0 polygon ROIs will not be interpolated")
+	@Parameter(label = "Interpolate ROIs", min = "0.0", persist = true, description = "if 0.0 polygon ROIs will not be interpolated; 3-4 is usually a suitable value")
 	Double interpolationRange = 0.0;
 	
 	@Parameter(label = "Lock critical ROIs", description = "ROIs such as inset frames, calibration bars and scale bars will be locked in the SVG", persist = true)

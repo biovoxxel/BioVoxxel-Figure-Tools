@@ -238,6 +238,7 @@ public class SVG_Object_Factory {
 			Roi roi = roiVector.get(o);
 						
 			String roiName = roi.getName();
+			System.out.println(roiName);
 			
 			if(roiName != null && lockCriticalObjects) {
 				if (roiName.equalsIgnoreCase("|SB|") || roiName.equalsIgnoreCase("|CB|") || roiName.equalsIgnoreCase("|INSET_FRAME|")) {
@@ -421,6 +422,8 @@ public class SVG_Object_Factory {
 		
 		int roiType = roi.getType();
 		
+		System.out.println(roi.getName() + " -> " + roiType);
+		
 		if (roi instanceof TextRoi) {
 			
 			shapeObject = createText(roi);
@@ -463,6 +466,9 @@ public class SVG_Object_Factory {
 			
 			shapeObject.setAttributeNS(inkscapeNS, "inkscape:label", roi.getName());
 			
+		} else {
+			
+			shapeObject.setAttributeNS(inkscapeNS, "inkscape:label", roi.getTypeAsString());
 		}
 		
 		
@@ -497,6 +503,10 @@ public class SVG_Object_Factory {
 						individualRois[s].setStrokeWidth(Math.max(roi.getStrokeWidth(), 1.0f));
 						individualRois[s].setStrokeColor(roi.getStrokeColor());
 						individualRois[s].setFillColor(roi.getFillColor());
+						
+						if (roi.getName() != null) {
+							individualRois[s].setName(roi.getName());							
+						}
 						
 						roiVector.add(individualRois[s]);
 //						System.out.println(individualRois[s] + " added");
@@ -535,8 +545,13 @@ public class SVG_Object_Factory {
 	
 	
 	private Element createPath(Roi pathRoi) {
-			
-		if (interpolate) {
+		
+		boolean skipInterpolation = false;
+		if (pathRoi.getName() != null && pathRoi.getName().equals("|INSET_FRAME|")) {
+			skipInterpolation = true;
+		}
+		
+		if (interpolate && !skipInterpolation) {
 			pathRoi = SvgUtilities.interpolateRoi(pathRoi, interpolationRange, smooth);
 		}
 
@@ -692,17 +707,16 @@ public class SVG_Object_Factory {
 		double x = (double) roi.getBounds().x;
 		double y = (double) roi.getBounds().y + roi.getBounds().height * 0.6667;
 		
-		System.out.println(roi);
-		System.out.println(x);
-		System.out.println(y);
-		
+//		System.out.println(roi);
+//		System.out.println(x);
+//		System.out.println(y);
 		
 		Element text = doc.createElementNS(svgNS, SVGSyntax.SVG_TEXT_TAG);
 
 		text.setAttributeNS(svgNS, SVGSyntax.SVG_X_ATTRIBUTE, "" + x);
 		text.setAttributeNS(svgNS, SVGSyntax.SVG_Y_ATTRIBUTE, "" + y);			
 
-		text.setAttributeNS(svgNS, SVGSyntax.SVG_TRANSFORM_ATTRIBUTE, "rotate(" + -roiAngle + " " + roi.getBounds().x + " " + roi.getBounds().y + ")");
+		text.setAttributeNS(svgNS, SVGSyntax.SVG_TRANSFORM_ATTRIBUTE, SVGSyntax.SVG_ROTATE_ATTRIBUTE + "(" + -roiAngle + " " + roi.getBounds().x + " " + roi.getBounds().y + ")");
 		text.setAttributeNS(svgNS, SVGSyntax.CSS_LETTER_SPACING_PROPERTY, "0px");
 		text.setAttributeNS(svgNS, SVGSyntax.CSS_WORD_SPACING_PROPERTY, "0px");
 		text.setAttributeNS(svgNS, SVGSyntax.CSS_STROKE_WIDTH_PROPERTY, "0px");
