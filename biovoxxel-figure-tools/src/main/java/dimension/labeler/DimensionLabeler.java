@@ -277,11 +277,11 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 			break;
 			
 		case "ABC":
-			str = numberToLetters('A', counter);
+			str = numberToLetter(counter).toUpperCase();
 			break;
 		
 		case "abc":
-			str = numberToLetters('a', counter);
+			str = numberToLetter(counter);
 			break;
 
 		default:
@@ -328,7 +328,7 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 		prefs.put(getClass(), "backgroundColor", backgroundColor.toString());
 	}
 	
-	public String numberToLetters(char c, int i) {
+	public String numberToLetter(int i) {
         if (i <= 0) {
             i = 1;
         }
@@ -338,11 +338,11 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 
         // Base case
         if (i < 26) {
-            return String.valueOf((char) (c + i));
+            return String.valueOf((char) ('a' + i));
         }
 
         // Recursive case
-        return numberToLetters(c, i / 26) + (char) (c + (i % 26));
+        return numberToLetter(i / 26) + (char) ('a' + (i % 26));
     }
 
 }
