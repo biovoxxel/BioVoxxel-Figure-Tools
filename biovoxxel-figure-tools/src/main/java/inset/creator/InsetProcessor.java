@@ -304,7 +304,12 @@ public class InsetProcessor {
 	 */
 	private static void straightenRotatedRect(ImagePlus impA, Roi roiA, ImagePlus impB) {
 		
-		Overlay oldOverlay = impB.getOverlay().duplicate();
+		
+		Overlay oldOverlay = new Overlay();
+		if (impB.getOverlay() != null) {
+			oldOverlay = impB.getOverlay().duplicate();
+		}
+		
 		//System.out.println(oldOverlay);
 		Overlay rotatedOverlay = oldOverlay.create();
 		
