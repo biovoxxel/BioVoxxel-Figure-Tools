@@ -268,7 +268,7 @@ public class SVG_Object_Factory {
 			}
 			String roiName = roi.getName();
 			
-//			System.out.println(roiName);
+			System.out.println(roiName);
 			
 			if(lockCriticalObjects) {
 				if (roiName.equalsIgnoreCase(ObjectLabels.SB.toString()) || roiName.equalsIgnoreCase(ObjectLabels.CALIBRATION_BAR.toString()) || roiName.equalsIgnoreCase(ObjectLabels.INSET_FRAME.toString())) {
@@ -282,29 +282,28 @@ public class SVG_Object_Factory {
 			
 			
 				
-				Element object = svgDoc.createObject(roi, roiName, lockObject);
-				
-				if (roiName.equalsIgnoreCase(ObjectLabels.CLIP_ROI.toString())) {
-					String clipPathId = addClipPathToDocument(object);
+			Element object = svgDoc.createObject(roi, roiName, lockObject);
+			
+			if (roiName.equalsIgnoreCase(ObjectLabels.CLIP_ROI.toString())) {
+				String clipPathId = addClipPathToDocument(object);
 //				System.out.println("clipPathId = " + clipPathId);
-					group.setAttributeNS(svgNS, SVGSyntax.SVG_CLIP_PATH_ATTRIBUTE, "url(#" + clipPathId + ")");
-					
-				} else {
-					if (!roiName.equals(ObjectLabels.TIME_STAMP.toString()) && !roiName.equals(ObjectLabels.PROTECTED_TIME_STAMP.toString())) {
-
-//						System.out.println("appending " + roiName + System.lineSeparator());
-						group.appendChild(object);
-						
-					} else {
-						
-						if (o < roiVector.size()-1 && !roi.getBounds().equals(roiVector.get(o+1).getBounds())) {
-//							System.out.println(roi.getBounds().equals(roiVector.get(o+1).getBounds()));
-//							System.out.println("appending " + roiName + System.lineSeparator());
-							group.appendChild(object);
-						}
-						
-					}
-				}		
+				group.setAttributeNS(svgNS, SVGSyntax.SVG_CLIP_PATH_ATTRIBUTE, "url(#" + clipPathId + ")");
+				
+			} else {
+				
+				group.appendChild(object);
+				
+//				if (!roiName.equals(ObjectLabels.TIME_STAMP.toString()) && !roiName.equals(ObjectLabels.PROTECTED_TIME_STAMP.toString())) {
+//
+//					System.out.println("appending " + roiName + System.lineSeparator());
+//					group.appendChild(object);
+//					
+//				} else {
+//					
+//					//TODO: solve issue that time stamps in multiple channels will be added multiple times 
+//					
+//				}
+			}		
 				
 //			System.out.println("Added to document: " + object);
 
