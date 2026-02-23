@@ -22,6 +22,7 @@ import ij.WindowManager;
 import ij.gui.Overlay;
 import ij.gui.Roi;
 import ij.gui.TextRoi;
+import svg.exporter.objects.SVG_Object_Factory.ObjectLabels;
 
 @Plugin(type = Command.class, menuPath="Plugins>BioVoxxel Figure Tools>Dimension Labeler")
 public class DimensionLabeler extends DynamicCommand implements Interactive {
@@ -91,11 +92,11 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 		inputImp = WindowManager.getCurrentImage();
 	}
 	
-	public void updatePreview() {
+	public synchronized void updatePreview() {
 		
 		inputImageSwap();
 		inputImp.setOverlay(getStamperOverlay());
-		inputImp.updateAndDraw();
+		//inputImp.updateAndDraw();
 		setPreferences();
 	}
 	
@@ -166,7 +167,7 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 					
 					TextRoi stamperRoi = new TextRoi(text, xStart, yStart, getFont());
 					
-					stamperRoi.setName("|TIME_STAMP|");
+					stamperRoi.setName(ObjectLabels.TIME_STAMP.toString());
 					stamperRoi.setPosition(c, s, f);
 					stamperRoi.setStrokeColor(new Color(textColor.getRed(), textColor.getGreen(), textColor.getBlue()));
 
@@ -211,7 +212,7 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 		
 		if (oldOverlay != null) {
 			for (Roi roi : oldOverlay) {
-				if (roi.getName() == null || !roi.getName().equals("|TIME_STAMP|")) {
+				if (roi.getName() == null || !roi.getName().equals(ObjectLabels.TIME_STAMP.toString())) {
 					newOverlay.add(roi);
 				}
 			}
@@ -226,10 +227,10 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 		
 		if (oldOverlay != null) {
 			for (Roi roi : oldOverlay) {
-				if (roi.getName() != null && roi.getName().equals("|TIME_STAMP|") && keepFormerStamp) {
-					roi.setName("|PROTECTED_TIME_STAMP|");
-				} else if (roi.getName() != null && roi.getName().equals("|PROTECTED_TIME_STAMP|") && !keepFormerStamp) {
-					roi.setName("|TIME_STAMP|");
+				if (roi.getName() != null && roi.getName().equals(ObjectLabels.TIME_STAMP.toString()) && keepFormerStamp) {
+					roi.setName(ObjectLabels.PROTECTED_TIME_STAMP.toString());
+				} else if (roi.getName() != null && roi.getName().equals(ObjectLabels.PROTECTED_TIME_STAMP.toString()) && !keepFormerStamp) {
+					roi.setName(ObjectLabels.TIME_STAMP.toString());
 				}
 				System.out.println();
 			}
@@ -237,7 +238,11 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 		
 	}
 	
-	
+	/**
+	 * 
+	 * @param i
+	 * @return
+	 */
 	public String getStampText(int i) {
 		
 		int counter = stamperStart + (stamperStep * (i - 1));
@@ -300,13 +305,12 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 		
 	}
 	
-	public void isCancel() {
-		removeTimeStamp();
-	}
 	
 	public void run() {
+		
 		setLabelRetention();
 		updatePreview();
+
 	}
 	
 	public void setPreferences() {
@@ -328,6 +332,11 @@ public class DimensionLabeler extends DynamicCommand implements Interactive {
 		prefs.put(getClass(), "backgroundColor", backgroundColor.toString());
 	}
 	
+	/**
+	 * 
+	 * @param i
+	 * @return
+	 */
 	public String numberToLetter(int i) {
         if (i <= 0) {
             i = 1;
