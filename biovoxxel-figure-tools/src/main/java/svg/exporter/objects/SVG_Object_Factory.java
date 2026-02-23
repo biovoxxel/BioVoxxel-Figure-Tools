@@ -84,7 +84,10 @@ public class SVG_Object_Factory {
 		setImageAsPageSize(imp);
 	}
 	
-		
+	/**
+	 * Creates a new document
+	 * @param qualifiedName
+	 */
 	public void createNewDocument(String qualifiedName) {
 		
 		DOMImplementation impl = SVGDOMImplementation.getDOMImplementation();
@@ -103,7 +106,10 @@ public class SVG_Object_Factory {
 	
 	
 	
-	
+	/**
+	 * Defines the image as the new page size
+	 * @param imp
+	 */
 	public void setImageAsPageSize(ImagePlus imp) {
 		
 		docWidth = "" + imp.getWidth();
@@ -119,7 +125,10 @@ public class SVG_Object_Factory {
 	
 	}
 	
-	
+	/**
+	 * Allows to set specific normed page sizes
+	 * @param format
+	 */
 	public void setPageSize(DocFormat format) {
 		
 		switch (format) {
@@ -175,7 +184,12 @@ public class SVG_Object_Factory {
 
 	}
 	
-	
+	/**
+	 * 
+	 * @param interpolate
+	 * @param interpolationRange
+	 * @param smooth
+	 */
 	public void setInterpolation(boolean interpolate, double interpolationRange, boolean smooth) {
 		this.interpolate = interpolate;
 		this.interpolationRange = interpolationRange;
@@ -184,7 +198,16 @@ public class SVG_Object_Factory {
 	
 	
 	
-	
+	/**
+	 * 
+	 * @param imp
+	 * @param file
+	 * @param interpolationInterval
+	 * @param keepComposite
+	 * @param makeInteractive
+	 * @param embedImage
+	 * @param lockCriticalObjects
+	 */
 	public static void saveImageAndOverlaysAsSVG(ImagePlus imp, File file, double interpolationInterval, boolean keepComposite, boolean makeInteractive, boolean embedImage, boolean lockCriticalObjects) {
 
 		ImagePlus inputImp = imp.crop("whole-slice");
@@ -210,13 +233,15 @@ public class SVG_Object_Factory {
 		if (interpolationInterval > 0.0) {
 			svgDoc.setInterpolation(true, interpolationInterval, true);
 		}
-				
+		
+		//create a group for one particular image with all its overlays
 		Element group = doc.createElementNS(svgNS, SVGSyntax.SVG_G_TAG);
 		svgRoot.appendChild(group);
 
 		group.setAttributeNS(svgNS, SVGSyntax.SVG_ID_ATTRIBUTE, inputImp.getTitle());
 		group.setAttributeNS(inkscapeNS, "inkscape:label", "group_" + inputImp.getTitle());
 		
+		//add the image to the group
 		Element image;
 		if (imp.isComposite() && keepComposite) {
 			image = svgDoc.createComposite(inputImp, embedImage, makeInteractive);
@@ -229,6 +254,7 @@ public class SVG_Object_Factory {
 		group.appendChild(image);
 //		System.out.println("Added to document: " + image);
 		
+		//add all overlays to the group
 		Overlay overlay = inputImp.getOverlay();
 				
 		Vector<Roi> roiVector = svgDoc.getROIsFromOverlay(overlay);
@@ -237,11 +263,15 @@ public class SVG_Object_Factory {
 			
 			Roi roi = roiVector.get(o);
 						
+			if (roi.getName() == null) {
+				roi.setName(roi.getTypeAsString());
+			}
 			String roiName = roi.getName();
-			System.out.println(roiName);
 			
-			if(roiName != null && lockCriticalObjects) {
-				if (roiName.equalsIgnoreCase("|SB|") || roiName.equalsIgnoreCase("|CB|") || roiName.equalsIgnoreCase("|INSET_FRAME|")) {
+//			System.out.println(roiName);
+			
+			if(lockCriticalObjects) {
+				if (roiName.equalsIgnoreCase(ObjectLabels.SB.toString()) || roiName.equalsIgnoreCase(ObjectLabels.CALIBRATION_BAR.toString()) || roiName.equalsIgnoreCase(ObjectLabels.INSET_FRAME.toString())) {
 					lockObject = true;
 				} else {
 					lockObject = false;
@@ -250,25 +280,44 @@ public class SVG_Object_Factory {
 				lockObject = false;
 			}
 			
-			Element object = svgDoc.createObject(roi, roiName, lockObject);
-
-			if (roiName != null && roiName.equalsIgnoreCase("|CLIP_ROI|")) {
-				String clipPathId = addClipPathToDocument(object);
-//				System.out.println("clipPathId = " + clipPathId);
-				group.setAttributeNS(svgNS, SVGSyntax.SVG_CLIP_PATH_ATTRIBUTE, "url(#" + clipPathId + ")");
-				
-			} else {
-//				System.out.println("appending " + object + System.lineSeparator());
-				group.appendChild(object);
-			}
 			
+				
+				Element object = svgDoc.createObject(roi, roiName, lockObject);
+				
+				if (roiName.equalsIgnoreCase(ObjectLabels.CLIP_ROI.toString())) {
+					String clipPathId = addClipPathToDocument(object);
+//				System.out.println("clipPathId = " + clipPathId);
+					group.setAttributeNS(svgNS, SVGSyntax.SVG_CLIP_PATH_ATTRIBUTE, "url(#" + clipPathId + ")");
+					
+				} else {
+					if (!roiName.equals(ObjectLabels.TIME_STAMP.toString()) && !roiName.equals(ObjectLabels.PROTECTED_TIME_STAMP.toString())) {
+
+//						System.out.println("appending " + roiName + System.lineSeparator());
+						group.appendChild(object);
+						
+					} else {
+						
+						if (o < roiVector.size()-1 && !roi.getBounds().equals(roiVector.get(o+1).getBounds())) {
+//							System.out.println(roi.getBounds().equals(roiVector.get(o+1).getBounds()));
+//							System.out.println("appending " + roiName + System.lineSeparator());
+							group.appendChild(object);
+						}
+						
+					}
+				}		
+				
 //			System.out.println("Added to document: " + object);
+
 		}
 	
 		svgDoc.saveSvgFile(SvgUtilities.getSvgFile(inputImp, file));
 	}
 	
-	
+	/**
+	 * Creates a clip path, necessary to clip ROIs and images outside the inset frame
+	 * @param clipObject
+	 * @return
+	 */
 	public static String addClipPathToDocument(Element clipObject) {
 //		System.out.println("adding clipping path" + System.lineSeparator());
 		Element clipDef = doc.createElementNS(svgNS, SVGSyntax.SVG_DEFS_TAG);
@@ -321,7 +370,13 @@ public class SVG_Object_Factory {
 		return image;
 	}
 	
-	
+	/**
+	 * 
+	 * @param composite
+	 * @param embed
+	 * @param makeInteractive
+	 * @return
+	 */
 	public Element createComposite(ImagePlus composite, boolean embed, boolean makeInteractive) {
 
 //		System.out.println("Creating composite SVG");
@@ -409,7 +464,7 @@ public class SVG_Object_Factory {
 	
 	/**
 	 * 
-	 * Does not work with Roi.COMPOSITE ROIs. Those need to be split first by using getROIsFrom Overlay
+	 * Does not work with Roi.COMPOSITE ROIs. Those need to be split first by using getROIsFromOverlay
 	 * 
 	 * @param roi
 	 * @param description
@@ -422,7 +477,7 @@ public class SVG_Object_Factory {
 		
 		int roiType = roi.getType();
 		
-		System.out.println(roi.getName() + " -> " + roiType);
+//		System.out.println(roi.getName() + " -> " + roiType);
 		
 		if (roi instanceof TextRoi) {
 			
@@ -437,7 +492,7 @@ public class SVG_Object_Factory {
 				setGeneralObjectAttributes(roi, shapeObject);
 				break;
 				
-			case Roi.POLYGON: case Roi.FREEROI: case Roi.FREELINE: case Roi.POLYLINE: case Roi.ANGLE: case Roi.LINE: case Roi.TRACED_ROI: case Roi.COMPOSITE:
+			case Roi.POLYGON: case Roi.FREEROI: case Roi.FREELINE: case Roi.POLYLINE: case Roi.ANGLE: case Roi.LINE: case Roi.TRACED_ROI:
 				shapeObject = createPath(roi);
 				setGeneralObjectAttributes(roi, shapeObject);
 				break;
@@ -484,7 +539,11 @@ public class SVG_Object_Factory {
 	}
 
 	
-	
+	/**
+	 * 
+	 * @param overlay
+	 * @return
+	 */
 	private Vector<Roi> getROIsFromOverlay(Overlay overlay) {
 				
 		Vector<Roi> roiVector = new Vector<Roi>();
@@ -521,7 +580,11 @@ public class SVG_Object_Factory {
 		return roiVector;
 	}
 	
-	
+	/**
+	 * 
+	 * @param roi
+	 * @param shapeObject
+	 */
 	private void setGeneralObjectAttributes(Roi roi, Element shapeObject) {
 		shapeObject.setAttributeNS(null, SVGSyntax.SVG_STROKE_WIDTH_ATTRIBUTE, "" + Math.max(roi.getStrokeWidth(), 1.0f));
 		shapeObject.setAttributeNS(null, SVGSyntax.SVG_STROKE_DASHARRAY_ATTRIBUTE, "none");
@@ -543,11 +606,15 @@ public class SVG_Object_Factory {
 				
 	}
 	
-	
+	/**
+	 * 
+	 * @param pathRoi
+	 * @return
+	 */
 	private Element createPath(Roi pathRoi) {
 		
 		boolean skipInterpolation = false;
-		if (pathRoi.getName() != null && pathRoi.getName().equals("|INSET_FRAME|")) {
+		if (pathRoi.getName() != null && pathRoi.getName().equals(ObjectLabels.INSET_FRAME.toString())) {
 			skipInterpolation = true;
 		}
 		
@@ -649,7 +716,7 @@ public class SVG_Object_Factory {
 		return path;
 	}
 
-
+	
 	private void addMarkerToDocument() {
 //		System.out.println("Adding arrow marker to document");
 		
@@ -678,7 +745,11 @@ public class SVG_Object_Factory {
 		SVG_Object_Factory.doc.getDocumentElement().appendChild(arrowDefs);
 	}
 
-
+	/**
+	 * 
+	 * @param roi
+	 * @return
+	 */
 	private Element createText(Roi roi) {
 				
 		TextRoi textRoi = ((TextRoi) roi);
@@ -695,9 +766,7 @@ public class SVG_Object_Factory {
 			fontFamily = "Arial";
 		} 
 //		System.out.println(fontFamily);
-		
-		
-				
+			
 		Color textColor = textRoi.getStrokeColor();
 		
 		double textOpacity = (double) textColor.getAlpha() / 255;	
@@ -762,7 +831,11 @@ public class SVG_Object_Factory {
 		return text;
 	}
 
-
+	/**
+	 * 
+	 * @param rectangleRoi
+	 * @return
+	 */
 	public Element createRectangle(Roi rectangleRoi) {
 		
 		Element rectangle = doc.createElementNS(svgNS, SVGSyntax.SVG_RECT_TAG);
@@ -779,7 +852,11 @@ public class SVG_Object_Factory {
 		return rectangle;
 	}
 	
-
+	/**
+	 * 
+	 * @param ellipseRoi
+	 * @return
+	 */
 	public Element createEllipse(Roi ellipseRoi) {
 		
 		Element ellipse = doc.createElementNS(svgNS, SVGSyntax.SVG_ELLIPSE_TAG);
@@ -801,7 +878,10 @@ public class SVG_Object_Factory {
 		return ellipse;
 	}
 	
-	
+	/**
+	 * 
+	 * @param outputFile
+	 */
 	public void saveSvgFile(File outputFile) {
 		SVGGraphics2D graphGen = new SVGGraphics2D(doc);
 		
@@ -825,6 +905,12 @@ public class SVG_Object_Factory {
 		
 	}
 	
+	/**
+	 * 
+	 * @param id
+	 * @param blendMode
+	 * @return
+	 */
 	public Element createChannelSwapScript(long id, String blendMode) {
 		Element script = doc.createElementNS(svgNS, SVGSyntax.SVG_SCRIPT_TAG);
 		
@@ -898,6 +984,34 @@ public class SVG_Object_Factory {
 		DINA4, DINA0, US_LETTER, US_LEGAL, DINA1, DINA2
 	}
 
+	public enum ObjectLabels {
+		SB("|SB|"),
+		INSET_FRAME("|INSET_FRAME|"),
+		CLIP_ROI("|CLIP_ROI|"),
+		CALIBRATION_BAR("|CB|"),
+		TIME_STAMP("|TIME_STAMP|"),
+		PROTECTED_TIME_STAMP("|PROTECTED_TIME_STAMP|")
+		;
+		
+		private final String objectLabel;
+		
+		/**
+	     * @param text
+	     */
+		ObjectLabels(final String text) {
+	        this.objectLabel = text;
+	    }
+
+	    /* (non-Javadoc)
+	     * @see java.lang.Enum#toString()
+	     */
+	    @Override
+	    public String toString() {
+	        return objectLabel;
+	    }
+		
+	}
+	
 	
 	
 	public static void main(String[] args) {

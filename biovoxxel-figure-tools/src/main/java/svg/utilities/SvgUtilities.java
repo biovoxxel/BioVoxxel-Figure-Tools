@@ -9,6 +9,7 @@ import ij.ImagePlus;
 import ij.gui.Arrow;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import ij.gui.ShapeRoi;
 import ij.process.FloatPolygon;
 import ij.process.LUT;
 
@@ -135,8 +136,11 @@ public class SvgUtilities {
 		
 		if (roiType!=Roi.LINE && roiType!=Roi.ANGLE && roiType!=Roi.POINT && !(roi instanceof Arrow) && interpolationInterval != 0) {
 				
+			
+			ShapeRoi shapeRoi = new ShapeRoi(roi);
+			
 			FloatPolygon interpolatedPolygon;
-			interpolatedPolygon = roi.getInterpolatedPolygon(interpolationInterval, smooth);							
+			interpolatedPolygon = shapeRoi.getInterpolatedPolygon(interpolationInterval, smooth);							
 				
 			if (roiType==Roi.COMPOSITE) {
 

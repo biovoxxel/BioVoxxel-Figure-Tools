@@ -30,6 +30,7 @@ import ij.plugin.RoiRotator;
 import ij.plugin.RoiScaler;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
+import svg.exporter.objects.SVG_Object_Factory.ObjectLabels;
 
 public class InsetProcessor {
 	
@@ -92,6 +93,7 @@ public class InsetProcessor {
 				
 				scaledImagePlus = imagePlus.resize(frameRoi.getBounds().width * Inset_Creator.magnification, frameRoi.getBounds().height * Inset_Creator.magnification, 1, "none");
 			}
+			
 			//scaledImagePlus.getOverlay().clear();
 			//scaledImagePlus.updateAndDraw();
 				
@@ -105,7 +107,7 @@ public class InsetProcessor {
 				}
 				frameRoi.setStrokeWidth(Inset_Creator.frameWidth);
 				frameRoi.setStrokeColor(frameColor);
-				frameRoi.setName("|INSET_FRAME|");
+				frameRoi.setName(ObjectLabels.INSET_FRAME.toString());
 				
 				Overlay originalOverlay = imagePlus.getOverlay();
 				if (originalOverlay == null) {
@@ -119,8 +121,8 @@ public class InsetProcessor {
 			
 			
 			//add inset Roi to inset overlay
+			Roi insetRoi = null;
 			if (Inset_Creator.addFrameToInset) {
-				Roi insetRoi = null;
 				if (Inset_Creator.aspectRatio.contains("Circle")) {
 					insetRoi = new OvalRoi(frameWidth/2, frameWidth/2, scaledImagePlus.getWidth()-(frameWidth+1), scaledImagePlus.getHeight()-(frameWidth+1));
 				} else {
@@ -129,7 +131,7 @@ public class InsetProcessor {
 			
 				insetRoi.setStrokeWidth(Inset_Creator.frameWidth);
 				insetRoi.setStrokeColor(frameColor);
-				insetRoi.setName("|INSET_FRAME|");
+				insetRoi.setName(ObjectLabels.INSET_FRAME.toString());
 				
 				finalOverlay.add(insetRoi);
 
@@ -137,7 +139,7 @@ public class InsetProcessor {
 			}
 
 			//add the final overlay in a upscaled manner to the inset image
-			scaledImagePlus.setOverlay(translate(finalOverlay));
+			scaledImagePlus.setOverlay(translate(finalOverlay, insetRoi));
 			
 			//set a clipping Roi to cut off ROIs outside the image area and image areas outside a circular inset ROI
 			Roi clippingRoi = null;
@@ -148,7 +150,7 @@ public class InsetProcessor {
 			}
 			clippingRoi.setStrokeWidth(Inset_Creator.frameWidth);
 			clippingRoi.setStrokeColor(frameColor);
-			clippingRoi.setName("|CLIP_ROI|");
+			clippingRoi.setName(ObjectLabels.CLIP_ROI.toString());
 			scaledImagePlus.getOverlay().add(clippingRoi);	//add twice to have a clipping Roi in Inkscape available
 			
 			
@@ -419,63 +421,91 @@ public class InsetProcessor {
 	}	
 	
 	
-	private static Overlay translate(Overlay inputOverlay) {
+	private static Overlay translate(Overlay inputOverlay, Roi insetRectangle) {
 		
 		//Overlay inputOverlay = inputImage.getOverlay();
 		Overlay outputOverlay = new Overlay();
 		
-		for (int i=0; i<inputOverlay.size(); i++) {
-			Roi roi = inputOverlay.get(i);
+		if (inputOverlay != null) {
 			
-			int position = roi.getPosition();
-			
-			if (roi.getName() == "|INSET_FRAME|" || roi.getName() == "|CLIP_ROI|") {
+			for (int i=0; i<inputOverlay.size(); i++) {
+				Roi roi = inputOverlay.get(i);
 				
-				outputOverlay.add(roi);
+				int position = roi.getPosition();
 				
-			} else if (roi instanceof Arrow) {		
-				
-				Arrow arrow = ((Arrow)roi);				
-				Arrow newArrow = new Arrow(arrow.x2d * Inset_Creator.magnification + (arrow.x1d - arrow.x2d), arrow.y2d * Inset_Creator.magnification + (arrow.y1d - arrow.y2d), arrow.x2d * Inset_Creator.magnification, arrow.y2d * Inset_Creator.magnification);
-				
-				newArrow.setStrokeColor(arrow.getStrokeColor());
-				newArrow.setStrokeWidth(arrow.getStrokeWidth());
-				newArrow.setHeadSize(arrow.getHeadSize());
-				
-				roi = newArrow;
+				if (roi.getName() != null && (roi.getName().equals(ObjectLabels.INSET_FRAME.toString()) || roi.getName().equals(ObjectLabels.CLIP_ROI.toString()))) {
+					
+					outputOverlay.add(roi);
+					
+				} else if (roi instanceof Arrow) {		
+					
+					Arrow arrow = ((Arrow)roi);				
+					Arrow newArrow = new Arrow(arrow.x2d * Inset_Creator.magnification + (arrow.x1d - arrow.x2d), arrow.y2d * Inset_Creator.magnification + (arrow.y1d - arrow.y2d), arrow.x2d * Inset_Creator.magnification, arrow.y2d * Inset_Creator.magnification);
+					
+					newArrow.setStrokeColor(arrow.getStrokeColor());
+					newArrow.setStrokeWidth(arrow.getStrokeWidth());
+					newArrow.setHeadSize(arrow.getHeadSize());
+					newArrow.setDoubleHeaded(arrow.getDoubleHeaded());
+					newArrow.setStyle(Arrow.NOTCHED);
+					
+					roi = newArrow;
+					
+					roi.setPosition(position);
+					
+					outputOverlay.add(roi);			
+					
+				} else if (roi instanceof TextRoi) {
+					
+					double xBase = roi.getXBase();
+					double yBase = roi.getYBase();
+					
+					roi.setLocation(xBase * Inset_Creator.magnification, yBase * Inset_Creator.magnification);
+					
+					TextRoi currentTextRoi = ((TextRoi) roi);
+					
+					Font textFont = currentTextRoi.getCurrentFont();
+					
+					TextRoi newTextRoi = new TextRoi(xBase * Inset_Creator.magnification + (currentTextRoi.getBounds().width * (Inset_Creator.magnification-1)), (yBase * Inset_Creator.magnification) - (textFont.getSize() * (Inset_Creator.magnification-1)), ((TextRoi) roi).getText(), currentTextRoi.getCurrentFont());
+					newTextRoi.setStrokeColor(currentTextRoi.getStrokeColor());
+					
+					roi = newTextRoi;
+					
+					roi.setPosition(position);
+					
+					outputOverlay.add(roi);		
+					
+				} else {
+					
+					Roi roi_scaled = RoiScaler.scale(roi, Inset_Creator.magnification, Inset_Creator.magnification, false);
+					
+					
+					if (roi_scaled.isLine()) {
+						
+						roi_scaled = clipLineWithRectangle((Line)roi_scaled, insetRectangle);
+						
+						roi_scaled.setStrokeColor(roi.getStrokeColor());
+						roi_scaled.setStrokeWidth(Math.max(1.0, roi.getStrokeWidth()) * Inset_Creator.magnification);
+						roi_scaled.setName(roi.getName());
+						
+						outputOverlay.add(roi_scaled);
+						
+					} else {
+					
+						ShapeRoi croppedRoi;
+						if (insetRectangle != null) {
+							croppedRoi = (new ShapeRoi(roi_scaled)).and(new ShapeRoi(insetRectangle));
+						} else {
+							croppedRoi = new ShapeRoi(roi_scaled);
+						}
+						
+						copyStyle(roi, croppedRoi);
+						
+						outputOverlay.add(croppedRoi);
 	
-				roi.setPosition(position);
-
-				outputOverlay.add(roi);			
-				
-			} else if (roi instanceof TextRoi) {
-				
-				double xBase = roi.getXBase();
-				double yBase = roi.getYBase();
-				
-				roi.setLocation(xBase * Inset_Creator.magnification, yBase * Inset_Creator.magnification);
-				
-				TextRoi currentTextRoi = ((TextRoi) roi);
-				
-				Font textFont = currentTextRoi.getCurrentFont();
-								
-				TextRoi newTextRoi = new TextRoi(xBase * Inset_Creator.magnification + (currentTextRoi.getBounds().width * (Inset_Creator.magnification-1)), (yBase * Inset_Creator.magnification) - (textFont.getSize() * (Inset_Creator.magnification-1)), ((TextRoi) roi).getText(), currentTextRoi.getCurrentFont());
-				newTextRoi.setStrokeColor(currentTextRoi.getStrokeColor());
-				
-				roi = newTextRoi;
-				
-				roi.setPosition(position);
-
-				outputOverlay.add(roi);		
-				
-			} else {
-				
-				Roi roi_scaled = RoiScaler.scale(roi, Inset_Creator.magnification, Inset_Creator.magnification, false);
-				roi_scaled.setStrokeWidth(roi.getStrokeWidth());
-				outputOverlay.add(roi_scaled);
-				
+					}
+					
+				}
 			}
-			
 		}
 		
 		return outputOverlay;
@@ -534,7 +564,7 @@ public class InsetProcessor {
 				type = Roi.POLYGON;
 			if (type==Roi.RECTANGLE && poly.npoints>4) // rounded rectangle
 				type = Roi.FREEROI;
-			if (type==Roi.OVAL||type==Roi.TRACED_ROI)
+			if (type==Roi.OVAL || type==Roi.TRACED_ROI)
 				type = Roi.FREEROI;
 			roi2 = new PolygonRoi(poly.xpoints, poly.ypoints,poly.npoints, type);
 		}
@@ -554,7 +584,63 @@ public class InsetProcessor {
 		roi2.copyAttributes(roi);
 		return roi2;
 	}
+	
+	private static void copyStyle(Roi from, Roi to) {
+        to.setStrokeColor(from.getStrokeColor());
+        to.setFillColor(from.getFillColor());
+        to.setStrokeWidth(from.getStrokeWidth());
+        to.setName(from.getName());
+    }
+	
+	
+	public static Line clipLineWithRectangle(Line line, Roi rectRoi) {
 
+	    Rectangle r = rectRoi.getBounds();
+
+	    double x0 = line.x1d;
+	    double y0 = line.y1d;
+	    double x1 = line.x2d;
+	    double y1 = line.y2d;
+
+	    double dx = x1 - x0;
+	    double dy = y1 - y0;
+
+	    double u1 = 0.0;
+	    double u2 = 1.0;
+
+	    double[] p = {-dx, dx, -dy, dy};
+	    double[] q = {
+	            x0 - r.x,
+	            r.x + r.width - x0,
+	            y0 - r.y,
+	            r.y + r.height - y0
+	    };
+
+	    for (int i = 0; i < 4; i++) {
+	        if (p[i] == 0) {
+	            if (q[i] < 0)
+	                return null; // parallel and outside
+	        } else {
+	            double t = q[i] / p[i];
+	            if (p[i] < 0) {
+	                if (t > u2) return null;
+	                if (t > u1) u1 = t;
+	            } else {
+	                if (t < u1) return null;
+	                if (t < u2) u2 = t;
+	            }
+	        }
+	    }
+
+	    if (u1 > u2) return null;
+
+	    double nx0 = x0 + u1 * dx;
+	    double ny0 = y0 + u1 * dy;
+	    double nx1 = x0 + u2 * dx;
+	    double ny1 = y0 + u2 * dy;
+
+	    return new Line(nx0, ny0, nx1, ny1);
+	}
 
 }
 

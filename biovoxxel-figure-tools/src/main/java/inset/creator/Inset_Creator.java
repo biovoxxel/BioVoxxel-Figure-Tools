@@ -12,7 +12,6 @@ import org.scijava.util.ColorRGB;
 import org.scijava.widget.Button;
 
 import ij.CompositeImage;
-import ij.IJ;
 import ij.ImagePlus;
 import ij.Macro;
 import ij.WindowManager;
