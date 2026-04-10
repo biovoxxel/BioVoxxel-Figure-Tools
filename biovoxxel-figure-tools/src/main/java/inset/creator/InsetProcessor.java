@@ -82,14 +82,32 @@ public class InsetProcessor {
 						
 				straightenRotatedRect(imagePlus, frameRoi, duplicatedInset);
 				
-				finalOverlay = duplicatedInset.getOverlay().duplicate();
+				Overlay transientOverlay = duplicatedInset.getOverlay();
+				if (transientOverlay != null) {
+					
+					finalOverlay = transientOverlay.duplicate();
+					
+				} else {
+					
+					finalOverlay = new Overlay();
+					
+				}
 				
 				scaledImagePlus = duplicatedInset.resize(duplicatedInset.getWidth() * Inset_Creator.magnification, duplicatedInset.getHeight() * Inset_Creator.magnification, 1, "none");
 	
 				
 			} else {
 				
-				finalOverlay = imagePlus.getOverlay().duplicate().crop(frameRoi.getBounds());
+				Overlay transientOverlay = imagePlus.getOverlay();
+				if (transientOverlay != null) {
+					
+					finalOverlay = transientOverlay.duplicate().crop(frameRoi.getBounds());
+					
+				} else {
+					
+					finalOverlay = new Overlay();
+					
+				}
 				
 				scaledImagePlus = imagePlus.resize(frameRoi.getBounds().width * Inset_Creator.magnification, frameRoi.getBounds().height * Inset_Creator.magnification, 1, "none");
 			}
